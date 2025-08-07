@@ -11,5 +11,10 @@ def load_to_sqlite(df: pd.DataFrame, db_path='data/srag.sqlite', table_name='sra
         table_name (str, optional): The table name of sqlite data. Defaults to 'srag_data'.
     """
     conn = sqlite3.connect(db_path)
-    df.to_sql(table_name, con=conn, if_exists='append', index=False)
+    df.to_sql(table_name, con=conn, if_exists='replace', index=False)
     conn.close()
+    
+if __name__ == '__main__':
+    data_path = 'data\data_clean.csv'
+    df = pd.read_csv(data_path)
+    load_to_sqlite(df=df)
