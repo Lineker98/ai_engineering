@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 from .prompt import SYSTEM_MESSAGE
+from .schemas import AgentSRAGResposta
 
 import os
 
@@ -47,11 +48,13 @@ def create_db_toolkit(df_path: str, llm: OpenAI) -> SQLDatabaseToolkit:
 def create_agent_srag(df_path: str, model='gpt-4o-mini') -> AgentExecutor:
     llm = create_openai_model(model=model)
     toolkit = create_db_toolkit(df_path=df_path, llm=llm)
+    #parser = PydanticOutputParser(pydantic_object=AgentSRAGResposta)
     
     agent = create_sql_agent(
         llm=llm,
         toolkit=toolkit, 
         verbose=True,
-        agent_kwargs={"system_message": SYSTEM_MESSAGE}
+        agent_kwargs={"system_message": SYSTEM_MESSAGE},
+        return_intermediate_steps=True,
     )
     return agent

@@ -1,7 +1,8 @@
 from langchain.output_parsers import PydanticOutputParser
-#from schemas import AgentSRAGResposta
+from .schemas import AgentSRAGResposta
 
-#parser = PydanticOutputParser(pydantic_object=AgentSRAGResposta)
+parser = PydanticOutputParser(pydantic_object=AgentSRAGResposta)
+FORMAT_INSTRUCTIONS = parser.get_format_instructions()
 
 SYSTEM_MESSAGE = f"""
 Você é um especialista em saúde pública com acesso a um banco de dados hospitalar real contendo registros de internação por 
@@ -41,4 +42,7 @@ Você deve seguir os seguintes passos para responder as perguntas:
 2. Explique a lógica da query que será executada no banco de dados.
 3. Execute a query.
 4. Interprete o resultado em linguagem natural.
+
+IMPORTANTE: Ao finalizar, responda **exclusivamente** no seguinte formato JSON, preenchendo todos os campos:
+{FORMAT_INSTRUCTIONS}
 """

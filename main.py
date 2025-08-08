@@ -7,6 +7,6 @@ openai_api_key = os.getenv('OPENAI_API_KEY')
 df_path = 'data/marts/srag.sqlite'
 
 agent = create_agent_srag(df_path=df_path)
-response = agent.run("Qual a taxa de mortalidade para os pacientes com covid-19 no ano de 2025?")
+response = agent.invoke("Qual a taxa de mortalidade para os pacientes com covid-19 no ano de 2025?")
 
 print(response)
