@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
+from .helper_functions import save_chart_data
 
 def fetch_dates_df(
     db_path: str | Path,
@@ -55,8 +56,25 @@ def plot_daily_cases_last_30_days(
     table: str = "srag_data",
     date_col: str = "DT_SIN_PRI",
     where_clause: Optional[str] = None,
+    json_path: str = None,
     rolling_days: int = 7,
-) -> None:
+    ) -> None:
+    """_summary_
+
+    Args:
+        db_path (str | Path): _description_
+        out_path (str | Path): _description_
+        table (str, optional): _description_. Defaults to "srag_data".
+        date_col (str, optional): _description_. Defaults to "DT_SIN_PRI".
+        where_clause (Optional[str], optional): _description_. Defaults to None.
+        rolling_days (int, optional): _description_. Defaults to 7.
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: _description_
+    """
     df = fetch_dates_df(db_path, table, date_col, where_clause)
     if df.empty:
         raise ValueError("Nenhum registro com data válida para o filtro informado.")
@@ -121,8 +139,15 @@ def plot_daily_cases_last_30_days(
     fig.savefig(out_path.with_suffix(".png"), dpi=200)
     fig.savefig(out_path.with_suffix(".svg"))
     plt.close(fig)
+    
+    save_chart_data(
+        df=daily_df,
+        sqlite_path=db_path,
+        output_path=json_path,
+        filters=where_clause
+    )
 
-    return daily_df
+    return None
 
 def plot_monthly_cases_last_12_months(
     db_path: str | Path,
@@ -130,6 +155,7 @@ def plot_monthly_cases_last_12_months(
     table: str = "srag_data",
     date_col: str = "DT_SIN_PRI",
     where_clause: Optional[str] = None,
+    json_path: str = None
     ) -> None:
     df = fetch_dates_df(db_path, table, date_col, where_clause)
     if df.empty:
@@ -186,4 +212,11 @@ def plot_monthly_cases_last_12_months(
     fig.savefig(out_path.with_suffix(".png"), dpi=200)
     fig.savefig(out_path.with_suffix(".svg"))
     plt.close(fig)
+    
+    save_chart_data(
+        df=s_monthly,
+        sqlite_path=db_path,
+        output_path=json_path,
+        filters=where_clause
+    )
     return None
