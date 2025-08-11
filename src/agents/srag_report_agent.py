@@ -1,6 +1,6 @@
 import sqlite3
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Any, Dict, Optional
 
 from langgraph.graph import StateGraph, END, START
@@ -12,6 +12,8 @@ from ..utils.report_queries import (
     SQL_MORTALITY,
     SQL_VACCINATION
 )
+from pathlib import Path
+import json, os, tempfile
 
 @dataclass
 class SRAGMetricsReport:
@@ -135,7 +137,47 @@ class SRAGMetricsReport:
 
         return graph.compile()
     
-    def run(self, start_date: Optional[date] = None, end_date: Optional[date] = None) -> MetricsBundle:
+    def save_bundle_metrics(self, bundle: MetricsBundle, output_path=str) -> Optional[Path]:
+        """_summary_
+
+        Args:
+            bundle (MetricsBundle): _description_
+            output_path (_type_, optional): _description_. Defaults to str.
+        """
+        path = Path(output_path)
+        print(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        
+        payload = {
+            "meta": {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "sqlite_path": self.sqlite_path,
+            },
+            "metrics": bundle.model_dump()
+        }
+        
+        tmp_name = None
+        try:
+            # Cria um arquivo temporário
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=str(path.parent), delete=False) as tmp:
+                json.dump(payload, tmp, ensure_ascii=False, indent=2)
+                tmp_name = tmp.name
+            
+            # Substitui de forma atômica
+            os.replace(tmp_name, path)
+            return path
+        except Exception as e:
+            print(f"[ERRO] Falha ao salvar métricas: {e}")
+            return None
+        finally:
+            # se sobrou arquivo temporário não usado, remove
+            if tmp_name and Path(tmp_name).exists():
+                try:
+                    os.remove(tmp_name)
+                except OSError:
+                    pass
+    
+    def run(self, start_date: Optional[date] = None, end_date: Optional[date] = None, save_path: str = None) -> MetricsBundle:
         """_summary_
 
         Args:
@@ -148,4 +190,6 @@ class SRAGMetricsReport:
         app = self.build_graph()
         init = {"start_date": start_date, "end_date": end_date, "results": {}}
         output = app.invoke(init)
-        return output["bundle"]
+        bundle = output["bundle"]
+        self.save_bundle_metrics(bundle, save_path)
+        return bundle
