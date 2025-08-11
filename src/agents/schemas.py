@@ -16,7 +16,7 @@ class AgentState(TypedDict):
     structured: Optional[AgentSQLResult]
     
     
-## Schemas to Report Agent
+# ------------ Schemas to Report Agent ---------------
 class MetricSeries(BaseModel):
     name: str
     rows: List[Dict[str, Any]] = Field(default_factory=list)
@@ -32,4 +32,5 @@ class ReportAgentState(TypedDict):
     start_date: Optional[date]
     end_date: Optional[date]
     results: Dict[str, MetricSeries]
+    bundle: MetricsBundle
     
