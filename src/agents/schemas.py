@@ -17,19 +17,19 @@ class AgentState(TypedDict):
     
     
 ## Schemas to Report Agent
-class MetricsSeries(BaseModel):
+class MetricSeries(BaseModel):
     name: str
     rows: List[Dict[str, Any]] = Field(default_factory=list)
     sql_used: str = ""
     
 class MetricsBundle(BaseModel):
-    case_growth: Optional[MetricsSeries] = None
-    mortality_rate: Optional[MetricsSeries] = None
-    uti_utilization_rate: Optional[MetricsSeries] = None
-    vaccination_rate: Optional[MetricsSeries] = None
+    case_growth: Optional[MetricSeries] = None
+    mortality_rate: Optional[MetricSeries] = None
+    uti_utilization_rate: Optional[MetricSeries] = None
+    vaccination_rate: Optional[MetricSeries] = None
 
 class ReportAgentState(TypedDict):
     start_date: Optional[date]
     end_date: Optional[date]
-    results: Dict[str, MetricsSeries]
+    results: Dict[str, MetricSeries]
     
