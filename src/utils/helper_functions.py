@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 from datetime import datetime, timezone
 import pandas as pd
-from typing import Optional
+from typing import Optional, Dict
 
 from pathlib import Path
 from datetime import datetime, timezone, date
