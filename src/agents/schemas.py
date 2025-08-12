@@ -34,6 +34,9 @@ class ReportAgentState(TypedDict):
     end_date: Optional[date]
     results: Dict[str, MetricSeries]
     bundle: MetricsBundle
+    save_path: Optional[str] = None
+    plot_dir: Optional[str] = None
+    plot_type: str = 'line'
     
 # ------------ Schemas to Report Agent build report ---------------
 class NewsArticleRaw(BaseModel):
