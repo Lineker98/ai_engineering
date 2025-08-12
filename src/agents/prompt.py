@@ -1,4 +1,3 @@
-# prompt.py
 from langchain_core.prompts import ChatPromptTemplate
 
 NORMALIZE_SYSTEM = (
