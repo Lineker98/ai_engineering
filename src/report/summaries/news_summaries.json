@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "generated_at": "2025-08-12T19:09:27.616708+00:00",
+    "model": "gpt-4o-mini",
+    "query": "SRAG Brasil"
+  },
+  "summaries": [
+    {
+      "title": "InfoGripe: casos de síndrome respiratória se mantêm em alta entre as crianças",
+      "url": "https://agenciagov.ebc.com.br/noticias/202508/infogripe-casos-de-vsr-em-criancas-se-mantem-em-niveis-elevados",
+      "source": "Agência Gov",
+      "published_at": "2025-08-08T00:00:00",
+      "summary": "O Boletim InfoGripe da Fiocruz, divulgado em 7 de agosto, revela que os casos de Síndrome Respiratória Aguda Grave (SRAG) entre crianças, associados ao Vírus Sincicial Respiratório (VSR), permanecem elevados na maioria dos estados brasileiros. O boletim também indica um aumento de casos de Covid-19 no Ceará e no Rio de Janeiro, além de hospitalizações em crianças na Bahia devido ao rinovírus. Apesar da queda nos casos de SRAG por influenza entre idosos, a situação permanece moderada a alta em várias regiões. A vacinação contra Covid-19 e gripe é recomendada, especialmente para idosos e imunocomprometidos. No total, 150.615 casos de SRAG foram notificados em 2025, com 53,5% positivos para vírus respiratórios.",
+      "key_points": [
+        "Casos de SRAG em alta entre crianças devido ao VSR.",
+        "Aumento de Covid-19 no Ceará e Rio de Janeiro.",
+        "Hospitalizações em crianças na Bahia por rinovírus.",
+        "Vacinação contra Covid-19 e gripe é recomendada.",
+        "150.615 casos de SRAG notificados em 2025."
+      ],
+      "coverage_scope": "Nacional",
+      "limitations": "O conteúdo não apresenta dados numéricos detalhados sobre a evolução dos casos."
+    },
+    {
+      "title": "G7News",
+      "url": "https://www.facebook.com/G7Newsgru/posts/os-casos-de-s%C3%ADndrome-respirat%C3%B3ria-aguda-grave-srag-em-crian%C3%A7as-ligados-ao-v%C3%ADrus-/1190612929777303/",
+      "source": "Facebook",
+      "published_at": "2000-01-01T00:00:00",
+      "summary": "O post discute os casos de Síndrome Respiratória Aguda Grave (SRAG) em crianças, relacionados a um vírus específico. A publicação foi feita recentemente, mas não fornece detalhes adicionais sobre números ou estatísticas. A informação parece ser de interesse para a saúde pública, especialmente no contexto pediátrico.",
+      "key_points": [
+        "Discussão sobre SRAG em crianças",
+        "Relação com um vírus específico"
+      ],
+      "coverage_scope": "Nacional",
+      "limitations": "Conteúdo não fornece dados numéricos ou estatísticas."
+    },
+    {
+      "title": "Covid-19 cresce no Ceará e Rio de Janeiro, Fiocruz alerta para cuidados com SRAG em crianças e idosos - União Metropolitana Curitiba",
+      "url": "https://uniaometropolitana.com.br/covid-19-cresce-no-ceara-e-rio-de-janeiro-fiocruz-alerta-para-cuidados-com-srag-em-criancas-e-idosos/",
+      "source": "União Metropolitana",
+      "published_at": "2025-08-09T00:00:00",
+      "summary": "Os casos de síndrome respiratória aguda grave (SRAG) entre crianças, associados ao vírus sincicial respiratório (VSR), permanecem elevados em vários estados brasileiros. O boletim da Fiocruz indica aumento de casos de covid-19 no Ceará e no Rio de Janeiro. Na Bahia, houve um aumento de hospitalizações em crianças e adolescentes devido ao rinovírus. Apesar de uma tendência de queda nos casos de SRAG por Influenza entre idosos e VSR em crianças até 2 anos, os níveis de SRAG permanecem moderados a altos entre idosos nas regiões Centro-Sul, Norte e Nordeste. A Fiocruz recomenda a atualização do esquema vacinal contra a covid-19 e a vacina contra a gripe, especialmente para idosos e imunocomprometidos. No ano de 2025, foram notificados 150.615 casos de SRAG, com 53,5% positivos para vírus respiratórios.",
+      "key_points": [
+        "Aumento de casos de covid-19 no Ceará e Rio de Janeiro.",
+        "SRAG elevado entre crianças devido ao VSR.",
+        "Aumento de hospitalizações na Bahia por rinovírus.",
+        "Tendência de queda em SRAG por Influenza entre idosos.",
+        "Recomendação de atualização vacinal contra covid-19 e gripe.",
+        "150.615 casos de SRAG notificados em 2025, com 53,5% positivos para vírus respiratórios."
+      ],
+      "coverage_scope": "Nacional",
+      "limitations": "Dados parciais sobre casos e hospitalizações."
+    },
+    {
+      "title": "InfoGripe: 72,5% dos óbitos por SRAG estão relacionados à influenza A",
+      "url": "https://agencia.fiocruz.br/infogripe-725-dos-obitos-por-srag-estao-relacionados-influenza",
+      "source": "Agência Fiocruz de Notícias",
+      "published_at": "2025-05-29T00:00:00",
+      "summary": "A nova edição do Boletim InfoGripe da Fiocruz revela que 72,5% dos óbitos por Síndrome Respiratória Aguda Grave (SRAG) estão associados à influenza A. A incidência da doença é moderada a alta, especialmente entre jovens, adultos e idosos, com um aumento significativo de mortalidade em idosos e crianças até dois anos. O boletim também destaca uma interrupção no crescimento das hospitalizações por Vírus Sincicial Respiratório (VSR) em algumas regiões. A vacinação é enfatizada como crucial para grupos prioritários, dado o cenário epidemiológico atual. A análise abrange a Semana Epidemiológica 21, de 18 de abril a 25 de maio de 2025.",
+      "key_points": [
+        "72,5% dos óbitos por SRAG relacionados à influenza A",
+        "Aumento de casos de SRAG em crianças e idosos",
+        "Interrupção no crescimento de hospitalizações por VSR em algumas localidades",
+        "Vacinação recomendada para grupos prioritários"
+      ],
+      "coverage_scope": "Nacional",
+      "limitations": "Dados parciais, sujeitos a alterações em atualizações futuras."
+    },
+    {
+      "title": "Covid-19: casos estão em alta nos estados do Ceará e Rio de Janeiro, aponta Fiocruz",
+      "url": "https://www.itatiaia.com.br/brasil/covid-19-casos-estao-em-alta-nos-estados-do-ceara-e-rio-de-janeiro-aponta-fiocruz",
+      "source": "Rádio Itatiaia",
+      "published_at": null,
+      "summary": "A Fundação Oswaldo Cruz (Fiocruz) reportou um aumento nos casos de Covid-19 nos estados do Ceará e Rio de Janeiro. A situação requer atenção das autoridades de saúde e da população, especialmente em relação às medidas de prevenção e controle da doença. O aumento nos casos pode impactar o sistema de saúde local e a necessidade de vacinação continua sendo enfatizada.",
+      "key_points": [
+        "Aumento de casos de Covid-19 no Ceará e Rio de Janeiro",
+        "Relatório da Fiocruz destaca a situação atual",
+        "Necessidade de atenção das autoridades de saúde"
+      ],
+      "coverage_scope": "regional",
+      "limitations": "Conteúdo textual não disponível."
+    }
+  ],
+  "executive_summary": {
+    "overall_summary": "O cenário atual da Síndrome Respiratória Aguda Grave (SRAG) no Brasil, conforme os dados mais recentes, revela uma preocupação crescente, especialmente entre crianças e idosos. O Boletim InfoGripe da Fiocruz, publicado em 7 de agosto de 2025, indica que 150.615 casos de SRAG foram notificados até o momento, com 53,5% positivos para vírus respiratórios. Os casos de SRAG entre crianças, particularmente associados ao Vírus Sincicial Respiratório (VSR), permanecem elevados em diversos estados, enquanto o aumento de casos de Covid-19 no Ceará e no Rio de Janeiro também é notável. Apesar de uma queda nos casos de SRAG por influenza entre idosos, a situação ainda é considerada moderada a alta em várias regiões. A vacinação contra Covid-19 e gripe é fortemente recomendada, especialmente para grupos vulneráveis. Além disso, 72,5% dos óbitos por SRAG estão relacionados à influenza A, destacando a necessidade de atenção contínua e medidas de prevenção adequadas.",
+    "highlights": [
+      "150.615 casos de SRAG notificados em 2025, com 53,5% positivos para vírus respiratórios (Agência Gov, 08/08/2025; União Metropolitana, 09/08/2025).",
+      "Aumento de casos de Covid-19 no Ceará e Rio de Janeiro (Agência Gov, 08/08/2025; União Metropolitana, 09/08/2025).",
+      "72,5% dos óbitos por SRAG estão relacionados à influenza A (Agência Fiocruz, 29/05/2025).",
+      "Vacinação contra Covid-19 e gripe é recomendada para idosos e imunocomprometidos (Agência Gov, 08/08/2025; União Metropolitana, 09/08/2025).",
+      "Interrupção no crescimento das hospitalizações por VSR em algumas regiões (Agência Fiocruz, 29/05/2025)."
+    ],
+    "consensus": "A maioria das fontes concorda que os casos de SRAG estão em alta, especialmente entre crianças, e que a vacinação é crucial para mitigar os impactos da doença, especialmente em grupos vulneráveis como idosos e imunocomprometidos.",
+    "disagreements": "Algumas fontes não fornecem dados numéricos detalhados ou atualizações sobre a evolução dos casos, o que limita a análise comparativa entre diferentes regiões e grupos etários.",
+    "sources_covered": [
+      "Agência Gov",
+      "G7News",
+      "União Metropolitana",
+      "Agência Fiocruz de Notícias",
+      "Rádio Itatiaia"
+    ]
+  },
+  "errors": []
+}
