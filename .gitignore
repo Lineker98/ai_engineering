@@ -1,5 +1,8 @@
 ## Data
 *.csv
+*.png
+*.svg
+*.json
 
 # Virtual Enviroment
 .venv/
