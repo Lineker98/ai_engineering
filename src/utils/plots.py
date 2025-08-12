@@ -1,12 +1,43 @@
 import sqlite3
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.ticker import FuncFormatter
 from .helper_functions import save_chart_data
+import matplotlib.ticker as mticker
+from ..agents.schemas import MetricsBundle, MetricSeries
+
+
+METRIC_CONFIG: Dict[str, Dict[str, str]] = {
+    'case_growth': {
+        'title': 'Crescimento Mensal de Casos de SRAG',
+        'ylabel': 'Variação Percentual (%)',
+        'y_col': 'taxa_aumento_pct',
+        'x_col': 'date_month',
+    },
+    'mortality_rate': {
+        'title': 'Taxa de Mortalidade Mensal por SRAG',
+        'ylabel': 'Mortalidade (%)',
+        'y_col': 'taxa_mortalidade_pct',
+        'x_col': 'date_month',
+    },
+    'uti_utilization_rate': {
+        'title': 'Taxa de Ocupação de UTI por SRAG',
+        'ylabel': 'Ocupação de UTI (%)',
+        'y_col': 'taxa_ocupacao_uti_pct',
+        'x_col': 'date_month',
+    },
+    'vaccination_rate': {
+        'title': 'Cobertura Vacinal (COVID-19) em Casos de SRAG',
+        'ylabel': 'Cobertura Vacinal (%)',
+        'y_col': 'taxa_vacinacao_casos_pct',
+        'x_col': 'date_month',
+    }
+}
+
 
 def fetch_dates_df(
     db_path: str | Path,
@@ -220,3 +251,82 @@ def plot_monthly_cases_last_12_months(
         filters=where_clause
     )
     return None
+
+def _plot_single_metric(df: pd.DataFrame, config: Dict[str, str], output_path: Path, plot_type: str):
+    """_summary_
+
+    Args:
+        df (pd.DataFrame): _description_
+        config (Dict[str, str]): _description_
+        output_path (Path): _description_
+        plot_type (str): _description_
+    """
+    if df.empty:
+        print(f"[AVISO] Nenhum dado para plotar para o gráfico: {config['title']}")
+        return
+
+    df = df.sort_values(by=config['x_col'])
+    
+    plt.style.use('seaborn-v0_8-whitegrid')
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    if plot_type == 'line':
+        ax.plot(
+            df[config['x_col']],
+            df[config['y_col']],
+            marker='o',
+            linestyle='-',
+            color='#00529B',
+            label='Valor Mensal'
+        )
+    elif plot_type == 'bar':
+        ax.bar(
+            df[config['x_col']],
+            df[config['y_col']],
+            color='#4f87ff',
+            width=0.8,
+            label='Valor Mensal'
+        )
+    
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: f'{y:.1f}%'))
+    ax.set_title(config['title'], fontsize=16, weight='bold', pad=20)
+    ax.set_ylabel(config['ylabel'], fontsize=12)
+    ax.set_xlabel('Mês/Ano', fontsize=12)
+    
+    ax.tick_params(axis='x', rotation=45)
+    ax.grid(True, which='major', linestyle='--', linewidth='0.5', color='grey')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    plt.tight_layout()
+    fig.savefig(output_path, dpi=150)
+    fig.savefig(output_path.with_suffix('.svg'))
+    plt.close(fig)
+    
+def plot_static_metrics(bundle: MetricsBundle, output_dir: str | Path, plot_type: str = 'line') -> None:
+    """
+    Gera e salva gráficos para cada métrica em um MetricsBundle.
+
+    Args:
+        bundle (MetricsBundle): O objeto contendo os dados das métricas.
+        output_dir (str | Path): O diretório onde os gráficos (PNG) serão salvos.
+        plot_type (str): O tipo de gráfico a ser gerado ('line' ou 'bar'). Padrão: 'line'.
+    """
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    
+    # Validação do tipo de plot
+    if plot_type not in ['line', 'bar']:
+        raise ValueError(f"Tipo de gráfico inválido: '{plot_type}'. Escolha entre 'line' ou 'bar'.")
+        
+    print(f"Gerando gráficos do tipo '{plot_type}' no diretório: {output_path.absolute()}")
+
+    for metric_name, config in METRIC_CONFIG.items():
+        metric_series: MetricSeries = getattr(bundle, metric_name)
+        df = pd.DataFrame(metric_series.rows)
+        plot_filename = output_path / f"{metric_name}_{plot_type}.png" # Adiciona o tipo ao nome do arquivo
+
+        # Passa o 'plot_type' para a função auxiliar
+        _plot_single_metric(df, config, plot_filename, plot_type)
+        
+    print("Gráficos gerados com sucesso!")

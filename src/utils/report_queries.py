@@ -23,56 +23,56 @@ order by date_month;
 
 SQL_MORTALITY = """
 with agg as (
-  select strftime('%Y-%m', date(DT_SIN_PRI)) as ym,
+  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,
          sum(case when EVOLUCAO in (1,2,3) then 1 else 0 end) as casos_validos,
          sum(case when EVOLUCAO = 2 then 1 else 0 end) as obitos_srag,
          sum(case when EVOLUCAO in (2,3) then 1 else 0 end) as obitos_totais
   from srag_data
   where DT_SIN_PRI is not null
-  group by ym
+  group by date_month
 )
 select
-  ym,
+  date_month,
   casos_validos,
   obitos_srag,
   round(100.0 * obitos_srag / nullif(casos_validos, 0), 2) as taxa_mortalidade_pct,
   round(100.0 * obitos_totais / nullif(casos_validos, 0), 2) as taxa_mortalidade_incl_outras_pct
 from agg
-order by ym;
+order by date_month;
 """.strip()
 
 SQL_UTI = """
 with agg as (
-  select strftime('%Y-%m', date(DT_SIN_PRI)) as ym,
+  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,
          sum(case when UTI in (1, 2) then 1 else 0 end) as casos_com_info_uti,
          sum(case when UTI = 1 then 1 else 0 end) as uti_sim
   from srag_data
   where DT_SIN_PRI is not null
-  group by ym
+  group by date_month
 )
 select
-  ym,
+  date_month,
   casos_com_info_uti,
   uti_sim,
   round(100.0 * uti_sim / nullif(casos_com_info_uti, 0), 2) as taxa_ocupacao_uti_pct
 from agg
-order by ym;
+order by date_month;
 """.strip()
 
 SQL_VACCINATION = """
 with agg as (
-  select strftime('%Y-%m', date(DT_SIN_PRI)) as ym,
+  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,
          sum(case when VACINA_COV in (1,2) then 1 else 0 end) as casos_com_info_vac,
          sum(case when VACINA_COV = 1 then 1 else 0 end) as vacinados
   from srag_data
   where DT_SIN_PRI is not null
-  group by ym
+  group by date_month
 )
 select
-  ym,
+  date_month,
   casos_com_info_vac,
   vacinados,
   round(100.0 * vacinados / nullif(casos_com_info_vac, 0), 2) as taxa_vacinacao_casos_pct
 from agg
-order by ym;
+order by date_month;
 """.strip()

@@ -12,6 +12,8 @@ from ..utils.report_queries import (
     SQL_MORTALITY,
     SQL_VACCINATION
 )
+from ..utils.helper_functions import save_json_atomic
+from ..utils.plots import plot_static_metrics
 from pathlib import Path
 import json, os, tempfile
 
@@ -115,6 +117,52 @@ class SRAGMetricsReport:
         )
         return {"bundle": bundle}
     
+    def save_bundle_metrics(self, bundle: MetricsBundle, output_path=str) -> Optional[Path]:
+        """_summary_
+
+        Args:
+            bundle (MetricsBundle): _description_
+            output_path (_type_, optional): _description_. Defaults to str.
+        """
+        
+        payload = {
+            "meta": {
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "sqlite_path": self.sqlite_path,
+            },
+            "metrics": bundle.model_dump()
+        }
+        path = save_json_atomic(payload=payload, output_path=output_path)
+        return path
+    
+    def node_save_and_plot(self, state: ReportAgentState) -> Dict:
+        """_summary_
+
+        Args:
+            state (ReportAgentState): _description_
+
+        Returns:
+            dict: _description_
+        """
+        bundle = state['bundle']
+        save_path = state.get('save_path')
+        plot_dir = state.get('plot_dir')
+        # NOVO: Obtém o tipo de gráfico do estado
+        plot_type = state.get('plot_type', 'line') # Usa 'line' como fallback
+
+        if not bundle:
+            print("[AVISO] Bundle de métricas está vazio. Nada a salvar ou plotar.")
+            return {}
+
+        if save_path:
+            print(f"Salvando métricas em JSON em: {save_path}")
+            self.save_bundle_metrics(bundle, save_path)
+        
+        if plot_dir:
+            plot_static_metrics(bundle, plot_dir, plot_type=plot_type)
+            
+        return {}
+    
     def build_graph(self):
         """_summary_
 
@@ -127,69 +175,41 @@ class SRAGMetricsReport:
         graph.add_node("metrics_icu", self.node_uti)
         graph.add_node("metrics_vaccination", self.node_vaccination)
         graph.add_node("aggregate_final", self.node_aggregate_final)
+        graph.add_node("save_and_plot", self.node_save_and_plot)
 
         graph.add_edge(START, "metrics_case_growth")
         graph.add_edge("metrics_case_growth", "metrics_mortality")
         graph.add_edge("metrics_mortality", "metrics_icu")
         graph.add_edge("metrics_icu", "metrics_vaccination")
         graph.add_edge("metrics_vaccination", "aggregate_final")
+        graph.add_edge("aggregate_final", "save_and_plot")
         graph.add_edge("aggregate_final", END)
 
         return graph.compile()
-    
-    def save_bundle_metrics(self, bundle: MetricsBundle, output_path=str) -> Optional[Path]:
-        """_summary_
-
-        Args:
-            bundle (MetricsBundle): _description_
-            output_path (_type_, optional): _description_. Defaults to str.
-        """
-        path = Path(output_path)
-        print(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        
-        payload = {
-            "meta": {
-                "generated_at": datetime.now(timezone.utc).isoformat(),
-                "sqlite_path": self.sqlite_path,
-            },
-            "metrics": bundle.model_dump()
-        }
-        
-        tmp_name = None
-        try:
-            # Cria um arquivo temporário
-            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=str(path.parent), delete=False) as tmp:
-                json.dump(payload, tmp, ensure_ascii=False, indent=2)
-                tmp_name = tmp.name
             
-            # Substitui de forma atômica
-            os.replace(tmp_name, path)
-            return path
-        except Exception as e:
-            print(f"[ERRO] Falha ao salvar métricas: {e}")
-            return None
-        finally:
-            # se sobrou arquivo temporário não usado, remove
-            if tmp_name and Path(tmp_name).exists():
-                try:
-                    os.remove(tmp_name)
-                except OSError:
-                    pass
-    
-    def run(self, start_date: Optional[date] = None, end_date: Optional[date] = None, save_path: str = None) -> MetricsBundle:
-        """_summary_
+    def run(self, start_date: Optional[date] = None, end_date: Optional[date] = None, save_path: str = None, plot_dir: str = None, plot_type: str = 'line') -> MetricsBundle:
+        """
+        Executa o pipeline completo: coleta, agrega, salva e plota as métricas.
 
         Args:
             start_date (Optional[date], optional): _description_. Defaults to None.
             end_date (Optional[date], optional): _description_. Defaults to None.
+            save_path (str, optional): _description_. Defaults to None.
+            plot_dir (str, optional): _description_. Defaults to None.
+            plot_type (str, optional): _description_. Defaults to 'line'.
 
         Returns:
             MetricsBundle: _description_
         """
         app = self.build_graph()
-        init = {"start_date": start_date, "end_date": end_date, "results": {}}
-        output = app.invoke(init)
+        init_state = {
+            "start_date": start_date, 
+            "end_date": end_date, 
+            "save_path": save_path,
+            "plot_dir": plot_dir,
+            "plot_type": plot_type,
+            "results": {}
+        }
+        output = app.invoke(init_state)
         bundle = output["bundle"]
-        self.save_bundle_metrics(bundle, save_path)
         return bundle
