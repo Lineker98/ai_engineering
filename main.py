@@ -1,5 +1,6 @@
 from src.agents.srag_sql_agent import SRAGSQLAgentApp
 from src.agents.srag_report_agent import SRAGMetricsReport
+from src.agents.srag_summary_agent import SummaryAgent
 from src.utils.plots import plot_daily_cases_last_30_days, plot_monthly_cases_last_12_months
 from src.etl.news_ingest import ingest_srag_news
 from dotenv import load_dotenv
@@ -37,4 +38,11 @@ metrics_output = 'src/report/metrics/static_metrics.json'
 query = '("Síndrome Respiratória Aguda Grave" OR SRAG) (Brasil OR estados) (Covid OR Influenza OR VSR)'
 output_path = "src/report/metrics/srag_news.json"
 
-articles = ingest_srag_news(query=query, output_path=output_path, top_k=5)
+articles = ingest_srag_news(query=query, output_path=output_path, top_k=10)
+
+agent = SummaryAgent(model="gpt-4o-mini")
+out = agent.run(
+    news_json_path="src/report/metrics/srag_news.json",
+    save_dir="src/report/summaries",
+    meta={"query": "SRAG Brasil"}
+)
