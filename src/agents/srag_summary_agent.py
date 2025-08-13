@@ -11,100 +11,119 @@ from .schemas import (
     NewsSummaryState,
     NewsItemSummary,
     NewsExecutiveSummary,
-    NewsArticleRaw
+    NewsArticleRaw,
 )
-from .prompt import (
-    PER_ARTICLE_SYSTEM,
-    PER_ARTICLE_USER,
-    AGG_SYSTEM,
-    AGG_USER
-)
+from .prompt import PER_ARTICLE_SYSTEM, PER_ARTICLE_USER, AGG_SYSTEM, AGG_USER
 from ..utils.helper_functions import save_json_atomic
 
+
 class SummaryAgent:
-    
-    def __init__(self, model='gpt-4o-mini', temperature=0):
-        """_summary_
+    """
+    Agente de sumarização de notícias.
+
+    Responsável por:
+      - Carregar artigos (JSON único ou diretório com vários JSONs).
+      - Normalizar chaves e deduplicar por URL.
+      - Resumir cada artigo com LLM (saída estruturada em `NewsItemSummary`).
+      - Agregar os resumos em um sumário executivo (`NewsExecutiveSummary`).
+      - Persistir o resultado em JSON (metadados, resumos, sumário executivo e erros).
+    """
+
+    def __init__(self, model="gpt-4o-mini", temperature=0):
+        """
+        Inicializa o agente e compila as chains de LLM para: (i) resumo por artigo e (ii) agregação executiva.
 
         Args:
-            model (str, optional): _description_. Defaults to 'gpt-4o-mini'.
-            temperature (int, optional): _description_. Defaults to 0.
+            model (str, optional): Nome do modelo a ser usado pelo LLM. Padrão: 'gpt-4o-mini'.
+            temperature (int, optional): Temperatura do LLM (controle de aleatoriedade). Padrão: 0.
         """
         self.llm = ChatOpenAI(model=model, temperature=temperature)
         self._per_article_chain = self._build_per_article_chain()
         self._aggegate_chain = self._build_aggregate_chain()
         self.model_name = model
-        
+
     def _build_per_article_chain(self):
-        """_summary_
+        """
+        Constrói a chain de resumo por artigo.
+
+        A chain recebe (title, source, published_at, url, text_or_snippet) e produz um
+        `NewsItemSummary` via `with_structured_output`.
 
         Returns:
-            _type_: _description_
+            Runnable: Pipeline de prompt + LLM para gerar `NewsItemSummary`.
         """
         prompt = ChatPromptTemplate.from_messages(
             [("system", PER_ARTICLE_SYSTEM), ("user", PER_ARTICLE_USER)]
         )
         return prompt | self.llm.with_structured_output(NewsItemSummary)
-    
+
     def _build_aggregate_chain(self):
-        """_summary_
+        """
+        Constrói a chain de agregação executiva.
+
+        A chain recebe um JSON com a lista de resumos (`summaries_json`) e devolve um
+        `NewsExecutiveSummary` (visão geral, destaques, consensos, divergências e fontes).
 
         Returns:
-            _type_: _description_
+            Runnable: Pipeline de prompt + LLM para gerar `NewsExecutiveSummary`.
         """
-        prompt = ChatPromptTemplate(
-            [("system", AGG_SYSTEM), ("user", AGG_USER)]
-        )
+        prompt = ChatPromptTemplate([("system", AGG_SYSTEM), ("user", AGG_USER)])
         return prompt | self.llm.with_structured_output(NewsExecutiveSummary)
-    
+
     @staticmethod
     def _coerce_article(article: Dict[str, Any]) -> NewsArticleRaw:
-        """_summary_
+        """
+        Converte um dicionário arbitrário de artigo para o schema `NewsArticleRaw`,
+        preenchendo ausências com `None`.
 
         Args:
-            article (Dict[str, Any]): _description_
+            article (Dict[str, Any]): Dicionário bruto de artigo.
 
         Returns:
-            NewsArticleRaw: _description_
+            NewsArticleRaw: Objeto normalizado com campos esperados pelo agente.
         """
         return NewsArticleRaw(
-            title=article.get('title'),
-            url=article.get('url'),
-            source=article.get('source'),
-            published_at=article.get('published_at'),
-            snippet=article.get('snippet'),
-            text=article.get('text'),
+            title=article.get("title"),
+            url=article.get("url"),
+            source=article.get("source"),
+            published_at=article.get("published_at"),
+            snippet=article.get("snippet"),
+            text=article.get("text"),
         )
-        
+
     @staticmethod
     def _pick_text_or_snippet(a: NewsArticleRaw, max_chars: int = 8000) -> str:
-        """_summary_
+        """
+        Seleciona o texto preferencial para sumarização: `text` (se existir) ou `snippet`.
+        Corta para no máximo `max_chars` caracteres.
 
         Args:
-            a (NewsArticleRaw): _description_
-            max_chars (int, optional): _description_. Defaults to 8000.
+            a (NewsArticleRaw): Artigo normalizado.
+            max_chars (int, optional): Limite máximo de caracteres. Padrão: 8000.
 
         Returns:
-            str: _description_
+            str: Conteúdo textual para o LLM, ou mensagem padrão caso ausente.
         """
         txt = (a.text or a.snippet or "").strip()
         if not txt:
             return "(sem conteúdo textual disponível)"
         return txt[:max_chars]
-    
+
     @staticmethod
     def _extract_from_json_obj(obj: Any) -> List[Dict[str, Any]]:
         """
-        Aceita formatos:
-          - {"articles": [...]}   (nosso formato)
-          - [...]                 (lista direta de artigos)
+        Extrai a lista de artigos a partir de diferentes formatos de JSON.
+
+        Aceita:
+          - {"articles": [...]}  (formato preferido)
+          - [...]                (lista direta de artigos)
         Ignora outros formatos.
 
         Args:
-            obj (Any): _description_
+            obj (Any): Objeto JSON carregado.
 
         Returns:
-            List[Dict[str, Any]]: _description_
+            List[Dict[str, Any]]: Lista de dicionários de artigos (possivelmente vazia).
         """
         if isinstance(obj, dict) and isinstance(obj.get("articles"), list):
             return obj["articles"]
@@ -115,27 +134,44 @@ class SummaryAgent:
     @staticmethod
     def _map_keys(article: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Normaliza chaves vindas de Serper/trafilatura para o formato esperado pelo agente.
+        Normaliza chaves de diferentes fontes (ex.: Serper, trafilatura) para o formato interno.
+
+        Mapeamentos contemplados: title, url/link, source, published_at/date/publishedDate,
+        snippet, text.
 
         Args:
-            article (Dict[str, Any]): _description_
+            article (Dict[str, Any]): Artigo com chaves heterogêneas.
 
         Returns:
-            Dict[str, Any]: _description_
+            Dict[str, Any]: Dicionário com chaves padronizadas.
         """
         return {
             "title": article.get("title"),
             "url": article.get("url") or article.get("link"),
             "source": article.get("source"),
-            "published_at": article.get("published_at") or article.get("date") or article.get("publishedDate"),
+            "published_at": article.get("published_at")
+            or article.get("date")
+            or article.get("publishedDate"),
             "snippet": article.get("snippet"),
             "text": article.get("text"),
         }
 
-    def _load_articles_from_path(self, path: str | Path, recursive: bool = True) -> List[Dict[str, Any]]:
+    def _load_articles_from_path(
+        self, path: str | Path, recursive: bool = True
+    ) -> List[Dict[str, Any]]:
         """
-        Lê um arquivo .json ou uma pasta (varios .json), normaliza e deduplica por URL.
-        Em duplicatas, fica com o item que tiver 'text' mais longo (melhor conteúdo).
+        Carrega artigos de um arquivo `.json` único OU de todos os `.json` em um diretório,
+        normaliza as chaves e deduplica por URL (ou, se ausente, por título).
+
+        Regras de deduplicação:
+          - Mantém o item com `text` mais longo (conteúdo mais rico).
+
+        Args:
+            path (str | Path): Caminho para arquivo JSON ou pasta contendo JSONs.
+            recursive (bool, optional): Se True, varre recursivamente a pasta. Padrão: True.
+
+        Returns:
+            List[Dict[str, Any]]: Lista de artigos normalizados e deduplicados.
         """
         p = Path(path)
         files: List[Path]
@@ -169,14 +205,22 @@ class SummaryAgent:
                     dedup[key] = it
         return list(dedup.values())
 
-
     def node_load(self, state: NewsSummaryState) -> NewsSummaryState:
+        """
+        Nó opcional de carregamento: se `articles` não estiver no estado, tenta ler de `input_path`.
+
+        Args:
+            state (NewsSummaryState): Estado atual; pode conter `input_path` para leitura.
+
+        Returns:
+            NewsSummaryState: Estado com `articles` carregados, ou com `errors` em caso de falha.
+        """
         if state.get("articles"):
             return {}
 
         input_path = state.get("input_path")
         if not input_path:
-            return {} 
+            return {}
 
         try:
             articles = self._load_articles_from_path(input_path)
@@ -185,62 +229,76 @@ class SummaryAgent:
             errs = list(state.get("errors") or [])
             errs.append(f"load: {e}")
             return {"errors": errs}
-    
+
     def node_summarize(self, state: NewsSummaryState) -> NewsSummaryState:
-        """_summary_
+        """
+        Produz resumos estruturados para cada artigo presente em `state['articles']`,
+        acumulando erros por índice de artigo quando houver exceções.
 
         Args:
-            state (NewsSummaryState): _description_
+            state (NewsSummaryState): Estado contendo `articles` (lista de dicts).
 
         Returns:
-            NewsSummaryState: _description_
+            NewsSummaryState: Estado com `summaries` (List[NewsItemSummary]) e `errors` (List[str]).
         """
         articles = state.get("articles") or []
         summaries: List[NewsItemSummary] = []
         errors = list(state.get("errors") or [])
-        
+
         for index, article_raw in enumerate(articles):
             try:
                 article = self._coerce_article(article_raw)
                 text_or_snippet = self._pick_text_or_snippet(article)
-                summary = self._per_article_chain.invoke({
-                    "title": article.title or "(Sem título)",
-                    "source": article.source or "(sem fonte)",
-                    "published_at": article.published_at or "(desconhecida)",
-                    "url": article.url or "",
-                    "text_or_snippet": text_or_snippet,
-                })
+                summary = self._per_article_chain.invoke(
+                    {
+                        "title": article.title or "(Sem título)",
+                        "source": article.source or "(sem fonte)",
+                        "published_at": article.published_at or "(desconhecida)",
+                        "url": article.url or "",
+                        "text_or_snippet": text_or_snippet,
+                    }
+                )
                 summaries.append(summary)
             except Exception as e:
                 errors.append(f"article_{index}: {e}")
         return {"summaries": summaries, "errors": errors}
-    
+
     def node_executive_summary(self, state: NewsSummaryState) -> NewsSummaryState:
-        """_summary_
+        """
+        Agrega a lista de `summaries` em um `NewsExecutiveSummary`
+        com objetivo de gerar um resumo com base em todos os outros
+        resumos singulares de cada página. Se não houver resumos,
+        retorna um objeto com mensagem padrão. Em exceção, registra o erro e retorna
+        um sumário executivo vazio.
 
         Args:
-            state (NewsSummaryState): _description_
+            state (NewsSummaryState): Estado contendo `summaries` (List[NewsItemSummary]).
 
         Returns:
-            NewsSummaryState: _description_
+            NewsSummaryState: Estado com `executive_summary`, com resumos de todos
+            os resumos de cada página e, se houver, `errors` atualizados.
         """
-        summaries = state.get('summaries') or []
+        summaries = state.get("summaries") or []
         if not summaries:
             executive_summary = NewsExecutiveSummary(
                 overall_summary="Nenhum artigo válido para reumir",
                 highlights=[],
                 consensus=None,
                 disagreements=None,
-                sources_covered=[]
+                sources_covered=[],
             )
             return {"executive_summary": executive_summary}
-        
+
         try:
-            summaries_json = json.dumps([summary.model_dump() for summary in summaries], ensure_ascii=False)
-            executive_summary = self._aggegate_chain.invoke({"summaries_json": summaries_json})
+            summaries_json = json.dumps(
+                [summary.model_dump() for summary in summaries], ensure_ascii=False
+            )
+            executive_summary = self._aggegate_chain.invoke(
+                {"summaries_json": summaries_json}
+            )
             return {"executive_summary": executive_summary}
         except Exception as e:
-            errors = list(state.get('errors') or [])
+            errors = list(state.get("errors") or [])
             errors.append(f"aggregate: {e}")
             executive_summary = NewsExecutiveSummary(
                 overall_summary="Falha ao agregar os resumos.",
@@ -250,20 +308,27 @@ class SummaryAgent:
                 sources_covered=[],
             )
             return {"executive_summary": executive_summary, "errors": errors}
-    
+
     def node_save(self, state: NewsSummaryState) -> NewsSummaryState:
-        """_summary_
+        """
+        Persiste os artefatos gerados em `save_dir/news_summaries.json`.
+
+        Estrutura salva:
+          - meta: generated_at, model e metadados adicionais do estado (`meta`)
+          - summaries: lista serializada de `NewsItemSummary` ou seja, resumos unitários.
+          - executive_summary: `NewsExecutiveSummary` ou seja, resumo geral
+          - errors: lista de mensagens de erro
 
         Args:
-            state (NewsSummaryState): _description_
+            state (NewsSummaryState): Estado contendo `save_dir`, `summaries`, `executive_summary` e `errors`.
 
         Returns:
-            NewsSummaryState: _description_
+            NewsSummaryState: Dicionário vazio em sucesso; estado com `errors` se houver falha.
         """
-        output_dir = state.get('save_dir')
+        output_dir = state.get("save_dir")
         if not output_dir:
             return {}
-        
+
         try:
             path = Path(output_dir)
             path.mkdir(parents=True, exist_ok=True)
@@ -273,8 +338,14 @@ class SummaryAgent:
                     "model": self.model_name,
                     **(state.get("meta") or {}),
                 },
-                "summaries": [summary.model_dump() for summary in state.get("summaries") or []],
-                "executive_summary": (state.get("executive_summary").model_dump() if state.get("executive_summary") else None),
+                "summaries": [
+                    summary.model_dump() for summary in state.get("summaries") or []
+                ],
+                "executive_summary": (
+                    state.get("executive_summary").model_dump()
+                    if state.get("executive_summary")
+                    else None
+                ),
                 "errors": state.get("errors") or [],
             }
             save_json_atomic(payload, path / "news_summaries.json")
@@ -284,18 +355,27 @@ class SummaryAgent:
             return {"errors": errors}
 
         return {}
-    
+
     def build_graph(self):
+        """
+        Constrói o grafo do pipeline de sumarização/agragação/salvamento.
+
+        Fluxo:
+          START -> summarize_news -> executive_summary -> save_outputs -> END
+
+        Returns:
+            Runnable: Aplicação compilada do LangGraph pronta para `invoke`.
+        """
         graph = StateGraph(NewsSummaryState)
-        graph.add_node('summarize_news', self.node_summarize)
-        graph.add_node('executive_summary', self.node_executive_summary)
-        graph.add_node('save_outputs', self.node_save)
-        
+        graph.add_node("summarize_news", self.node_summarize)
+        graph.add_node("executive_summary", self.node_executive_summary)
+        graph.add_node("save_outputs", self.node_save)
+
         graph.add_edge(START, "summarize_news")
         graph.add_edge("summarize_news", "executive_summary")
         graph.add_edge("executive_summary", "save_outputs")
         graph.add_edge("save_outputs", END)
-        
+
         return graph.compile()
 
     def run_from_articles(
@@ -304,6 +384,17 @@ class SummaryAgent:
         save_dir: Optional[str] = None,
         meta: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        """
+        Executa o pipeline a partir de uma lista de artigos em memória.
+
+        Args:
+            articles (List[Dict[str, Any]]): Lista de artigos (dicts) já disponíveis.
+            save_dir (Optional[str], optional): Diretório para salvar o JSON de saída. Padrão: None.
+            meta (Optional[Dict[str, Any]], optional): Metadados adicionais a incluir no arquivo. Padrão: None.
+
+        Returns:
+            Dict[str, Any]: Dicionário com `summaries`, `executive_summary` e `errors` produzidos pelo pipeline.
+        """
         app = self.build_graph()
         init: NewsSummaryState = {
             "articles": articles,
@@ -317,15 +408,27 @@ class SummaryAgent:
             "executive_summary": out.get("executive_summary"),
             "errors": out.get("errors", []),
         }
-    
+
     def run(
         self,
         news_json_path: str | Path,
         save_dir: Optional[str] = None,
         meta: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        """
+        Executa o pipeline lendo artigos de um arquivo JSON..
+
+        O arquivo deve conter ao menos a chave `articles` com uma lista de itens.
+
+        Args:
+            news_json_path (str | Path): Caminho do arquivo JSON com artigos (`{"articles": [...]}`).
+            save_dir (Optional[str], optional): Diretório de saída para persistência dos resultados. Padrão: None.
+            meta (Optional[Dict[str, Any]], optional): Metadados adicionais a incluir no payload salvo. Padrão: None.
+
+        Returns:
+            Dict[str, Any]: Dicionário com `summaries`, `executive_summary` e `errors` produzidos pelo pipeline.
+        """
         path = Path(news_json_path)
         data = json.loads(path.read_text(encoding="utf-8"))
         articles = data.get("articles", [])
         return self.run_from_articles(articles, save_dir=save_dir, meta=meta)
-            
