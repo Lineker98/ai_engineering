@@ -1,20 +1,29 @@
 import sqlite3
 import pandas as pd
 
-def load_to_sqlite(df: pd.DataFrame, db_path='data/srag.sqlite', table_name='srag_data') -> None:
-    """
-    This function aims to load the SRAG data into a SQLite Database
+
+def load_to_sqlite(
+    df: pd.DataFrame, db_path="data/srag.sqlite", table_name="srag_data"
+) -> None:
+    """Carrega um DataFrame do pandas para uma tabela SQLite (cria/atualiza a tabela).
+
+    Os dados são gravados usando DataFrame.to_sql com if_exists='replace',
+    substituindo a tabela caso ela já exista. O índice do DataFrame **não** é
+    persistido como coluna.
 
     Args:
-        df (pd.DataFrame): Pandas Dataframe with the data already prepared to be load.
-        db_path (str, optional): Path to store the sqlite. Defaults to 'data/srag.sqlite'.
-        table_name (str, optional): The table name of sqlite data. Defaults to 'srag_data'.
+      df (pd.DataFrame): DataFrame já limpo e pronto para persistência.
+      db_path (str, optional): Caminho do arquivo SQLite (.sqlite/.db).
+        Defaults to "data/srag.sqlite".
+      table_name (str, optional): Nome da tabela destino dentro do banco.
+        Defaults to "srag_data".
     """
     conn = sqlite3.connect(db_path)
-    df.to_sql(table_name, con=conn, if_exists='replace', index=False)
+    df.to_sql(table_name, con=conn, if_exists="replace", index=False)
     conn.close()
-    
-if __name__ == '__main__':
-    data_path = 'data\data_clean.csv'
+
+
+if __name__ == "__main__":
+    data_path = "data\data_clean.csv"
     df = pd.read_csv(data_path)
     load_to_sqlite(df=df)
