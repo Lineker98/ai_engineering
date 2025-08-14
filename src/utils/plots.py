@@ -35,7 +35,21 @@ METRIC_CONFIG: Dict[str, Dict[str, str]] = {
         'ylabel': 'Cobertura Vacinal (%)',
         'y_col': 'taxa_vacinacao_casos_pct',
         'x_col': 'date_month',
-    }
+    }, 
+    
+    'daily_cases': {
+        'title': 'Quantiade de casos diário de SRAG - Últimos 30 dias',
+        'ylabel': 'Quantidade de casos',
+        'y_col': 'casos_diarios',
+        'x_col': 'data',
+    },
+    
+    'monthly_cases': {
+        'title': 'Quantiade de casos por mês de SRAG - Últimos 12 meses',
+        'ylabel': 'Quantidade de casos',
+        'y_col': 'casos_mensais',
+        'x_col': 'date_month',
+    },
 }
 
 
@@ -299,7 +313,10 @@ def _plot_single_metric(df: pd.DataFrame, config: Dict[str, str], output_path: P
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: f'{y:.1f}%'))
     ax.set_title(config['title'], fontsize=16, weight='bold', pad=20)
     ax.set_ylabel(config['ylabel'], fontsize=12)
-    ax.set_xlabel('Mês/Ano', fontsize=12)
+    if config['x_col'] == "data":
+        ax.set_xlabel('Data', fontsize=12)
+    else:
+        ax.set_xlabel('Mês/Ano', fontsize=12)
     
     ax.tick_params(axis='x', rotation=45)
     ax.grid(True, which='major', linestyle='--', linewidth='0.5', color='grey')
