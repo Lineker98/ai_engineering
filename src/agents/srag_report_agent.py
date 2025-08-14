@@ -4,6 +4,8 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, Optional, Callable
 
 from langgraph.graph import StateGraph, END, START
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 
 from .schemas import MetricSeries, ReportAgentState, MetricsBundle
 from ..utils.report_queries import (
@@ -11,13 +13,18 @@ from ..utils.report_queries import (
     SQL_UTI,
     SQL_MORTALITY,
     SQL_VACCINATION,
+    SQL_CASOS_DIARIOS_30_DIAS,
+    SQL_CASOS_MENSAIS_12_MESES
+)
+from .prompt import (
+    SUMMARY_METRIC_SYSTEM,
+    SUMMARY_METRIC_USER
 )
 from ..utils.helper_functions import save_json_atomic
 from ..utils.plots import plot_static_metrics
 from pathlib import Path
 
 
-@dataclass
 class SRAGMetricsReport:
     """
     Orquestrador para cálculo de métricas de SRAG (Síndrome Respiratória Aguda Grave) sem uso de IA.
@@ -27,7 +34,19 @@ class SRAGMetricsReport:
     agrega em um `MetricsBundle` e oferece métodos para salvar os resultados em JSON e gerar gráficos.
     """
 
-    sqlite_path: str = "../../data/marts/srag.sqlite"
+    def __init__(self, sqlite_path: str, model="gpt-4o-mini", temperature=0):
+        self.sqlite_path = sqlite_path
+        self.llm = ChatOpenAI(model=model, temperature=temperature)
+        self.chain = self._build_summary_chain()
+        
+    def _build_summary_chain(self):
+        """
+        
+        """
+        prompt = ChatPromptTemplate.from_messages(
+            [("system", SUMMARY_METRIC_SYSTEM), ("user", SUMMARY_METRIC_USER)]
+        )
+        return prompt | self.llm
 
     def _query_rows(self, sql: str, params: Optional[Dict[str, Any]] = {}):
         """
@@ -61,9 +80,18 @@ class SRAGMetricsReport:
             ReportAgentState: Estado atualizado com a chave 'case_growth' contendo a série temporal.
         """
         rows = self._query_rows(SQL_CASE_GROWTH)
-        series = MetricSeries(name="case_growth", rows=rows, sql_used=SQL_CASE_GROWTH)
+        description = "Taxa de aumento de casos de SRAG - Grão mensal"
+        name = "case_growth"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
+        series = MetricSeries(name=name, rows=rows, sql_used=SQL_CASE_GROWTH, description=description, ia_summary=ia_summary.content)
         res = state["results"]
-        res["case_growth"] = series
+        res[name] = series
         return {"results": res}
 
     def node_mortality(self, state: ReportAgentState) -> ReportAgentState:
@@ -77,9 +105,18 @@ class SRAGMetricsReport:
             ReportAgentState: Estado atualizado com a chave 'mortality_rate' contendo a série temporal.
         """
         rows = self._query_rows(SQL_MORTALITY)
-        series = MetricSeries(name="mortality_rate", rows=rows, sql_used=SQL_MORTALITY)
+        description = "Taxa de mortalidade de SRAG - Grão mensal"
+        name = "mortality_rate"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
+        series = MetricSeries(name=name, rows=rows, sql_used=SQL_MORTALITY, description=description, ia_summary=ia_summary.content)
         res = state["results"]
-        res["mortality_rate"] = series
+        res[name] = series
         return {"results": res}
 
     def node_uti(self, state: ReportAgentState) -> ReportAgentState:
@@ -93,9 +130,18 @@ class SRAGMetricsReport:
             ReportAgentState: Estado atualizado com a chave 'uti_utilization_rate' contendo a série temporal.
         """
         rows = self._query_rows(SQL_UTI)
-        series = MetricSeries(name="uti_utilization_rate", rows=rows, sql_used=SQL_UTI)
+        description = "Taxa de ocupação de UTI - Grão mensal"
+        name = "uti_utilization_rate"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
+        series = MetricSeries(name=name, rows=rows, sql_used=SQL_UTI, description=description, ia_summary=ia_summary.content)
         res = state["results"]
-        res["uti_utilization_rate"] = series
+        res[name] = series
         return {"results": res}
 
     def node_vaccination(self, state: ReportAgentState) -> ReportAgentState:
@@ -109,14 +155,75 @@ class SRAGMetricsReport:
             ReportAgentState: Estado atualizado com a chave 'vaccination_rate' contendo a série temporal.
         """
         rows = self._query_rows(SQL_VACCINATION)
+        description = "Taxa de vacinação contra COVID-19 - Grão mensal"
+        name = "vaccination_rate"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
         series = MetricSeries(
-            name="vaccination_rate", rows=rows, sql_used=SQL_VACCINATION
+            name=name, rows=rows, sql_used=SQL_VACCINATION, description=description, ia_summary=ia_summary.content
         )
         res = state["results"]
-        res["vaccination_rate"] = series
+        res[name] = series
+        return {"results": res}
+    
+    def node_casos_diarios(self, state: ReportAgentState) -> ReportAgentState:
+        """_summary_
+
+        Args:
+            state (ReportAgentState): _description_
+
+        Returns:
+            ReportAgentState: _description_
+        """
+        rows = self._query_rows(SQL_CASOS_DIARIOS_30_DIAS)
+        description = "Casos diários de SRAG nos últimos 30 Dias"
+        name = "daily_cases"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
+        series = MetricSeries(
+            name=name, rows=rows, sql_used=SQL_CASOS_DIARIOS_30_DIAS, description=description, ia_summary=ia_summary.content
+        )
+        res = state["results"]
+        res[name] = series
+        return {"results": res}
+    
+    def node_casos_mensais(self, state: ReportAgentState) -> ReportAgentState:
+        """_summary_
+
+        Args:
+            state (ReportAgentState): _description_
+
+        Returns:
+            ReportAgentState: _description_
+        """
+        rows = self._query_rows(SQL_CASOS_MENSAIS_12_MESES)
+        description = "Casos mensais de SRAG nos últimos 12 meses"
+        name = "monthly_cases"
+        ia_summary = self.chain.invoke(
+            {
+                "name": name,
+                "rows": rows,
+                "description": description
+            }
+        )
+        series = MetricSeries(
+            name=name, rows=rows, sql_used=SQL_CASOS_DIARIOS_30_DIAS, description=description, ia_summary=ia_summary.content
+        )
+        res = state["results"]
+        res[name] = series
         return {"results": res}
 
-    def node_aggregate_final(self, state: ReportAgentState):
+    def node_aggregate_final(self, state: ReportAgentState) -> ReportAgentState:
         """
         Agrega todas as métricas calculadas em um objeto `MetricsBundle`.
 
@@ -132,8 +239,11 @@ class SRAGMetricsReport:
             mortality_rate=results["mortality_rate"],
             uti_utilization_rate=results["uti_utilization_rate"],
             vaccination_rate=results["vaccination_rate"],
+            daily_cases=results["daily_cases"],
+            monthly_cases=results["monthly_cases"]
         )
         return {"bundle": bundle}
+        
 
     def save_bundle_metrics(
         self, bundle: MetricsBundle, output_path=str
@@ -199,6 +309,8 @@ class SRAGMetricsReport:
         graph.add_node("metrics_mortality", self.node_mortality)
         graph.add_node("metrics_icu", self.node_uti)
         graph.add_node("metrics_vaccination", self.node_vaccination)
+        graph.add_node("daily_cases", self.node_casos_diarios)
+        graph.add_node("monthly_cases", self.node_casos_mensais)
         graph.add_node("aggregate_final", self.node_aggregate_final)
         graph.add_node("save_and_plot", self.node_save_and_plot)
 
@@ -206,9 +318,11 @@ class SRAGMetricsReport:
         graph.add_edge("metrics_case_growth", "metrics_mortality")
         graph.add_edge("metrics_mortality", "metrics_icu")
         graph.add_edge("metrics_icu", "metrics_vaccination")
-        graph.add_edge("metrics_vaccination", "aggregate_final")
+        graph.add_edge("metrics_vaccination", "daily_cases")
+        graph.add_edge("daily_cases", "monthly_cases")
+        graph.add_edge("monthly_cases", "aggregate_final")
         graph.add_edge("aggregate_final", "save_and_plot")
-        graph.add_edge("aggregate_final", END)
+        graph.add_edge("save_and_plot", END)
 
         return graph.compile()
 

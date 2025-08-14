@@ -22,12 +22,16 @@ class MetricSeries(BaseModel):
     name: str
     rows: List[Dict[str, Any]] = Field(default_factory=list)
     sql_used: str = ""
+    description: str = ""
+    ia_summary: Optional[str] = ""
     
 class MetricsBundle(BaseModel):
     case_growth: Optional[MetricSeries] = None
     mortality_rate: Optional[MetricSeries] = None
     uti_utilization_rate: Optional[MetricSeries] = None
     vaccination_rate: Optional[MetricSeries] = None
+    daily_cases: Optional[MetricSeries] = None
+    monthly_cases: Optional[MetricSeries] = None
 
 class ReportAgentState(TypedDict):
     start_date: Optional[date]

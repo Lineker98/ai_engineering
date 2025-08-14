@@ -13,6 +13,26 @@ def build_normalize_prompt() -> ChatPromptTemplate:
             ("user", "Histórico completo abaixo."),
         ]
     )
+    
+
+SUMMARY_METRIC_SYSTEM = """\
+Você é um especialista em dados e de saúde pública com foco em (SRAG - Síndrome Respiratória Aguda Grave).
+Você irá receber amostras de dados sobre índices e métricas gerais sobe SRAG no Brasil.
+Forneça insights e resumos claros sobre os dados que serão compostos pelos camos de 
+`name` (Nome da métrica), `rows` (linhas retornadas das consultas SQL) e `description` (descrição
+em linguagem natural da métrica)
+- Seja factual, objetivo e conciso, apenas um texto de (1-3 linhas).
+- Não forneça nem invente dados além dos fornecidos.
+- Não retorne o nome da métrica literal, apenas sua indescrição. Ex: case_growth deve ser mencionado como
+taxa de aumento de casos
+"""
+
+SUMMARY_METRIC_USER = """\
+Forneça insights sobre os dados a seguir
+Name: {name}
+Rows: {rows}
+Description: {description}
+"""
 
 
 PER_ARTICLE_SYSTEM = """\
