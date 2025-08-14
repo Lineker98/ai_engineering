@@ -76,3 +76,60 @@ select
 from agg
 order by date_month;
 """.strip()
+
+SQL_CASOS_DIARIOS_30_DIAS = """
+with 
+  base_data as (
+    select date(dt_sin_pri) as data_sintoma
+    from srag_data
+    where dt_sin_pri is not null
+  ),
+  ultima_data as (
+    select max(data_sintoma) as data_maxima
+    from base_data
+  ),
+  ultimos_30_dias as (
+    select data_sintoma
+    from base_data, ultima_data
+    where data_sintoma between date(data_maxima, '-29 days') and data_maxima
+)
+select
+    data_sintoma as data, 
+    count(*) as casos_diarios
+from ultimos_30_dias
+group by data_sintoma
+order by data_sintoma
+""".strip()
+
+
+SQL_CASOS_MENSAIS_12_MESES = """
+with 
+  base_data as (
+    select date(dt_sin_pri) as data_sintoma
+    from srag_data
+    where dt_sin_pri is not null
+  ),
+  
+  ultima_data as (
+    select max(data_sintoma) as data_maxima
+    from base_data
+  ),
+  
+  ultimos_12_meses as (
+    select data_sintoma
+    from base_data, ultima_data
+    where data_sintoma between date(data_maxima, '-11 months') and data_maxima
+  ),
+  
+  agg as (
+    select strftime('%Y-%m', data_sintoma) as date_month
+    from ultimos_12_meses
+  )
+  
+select
+    date_month,
+    count(*) as casos_mensais
+from agg
+group by date_month
+order by date_month
+"""
