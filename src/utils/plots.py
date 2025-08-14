@@ -49,15 +49,21 @@ def fetch_dates_df(
     path = Path(db_path)
     if not path.exists():
         raise FileNotFoundError(f"SQLite não encontrado em: {path.resolve()}")
+    
+    where_conditions = []
+    if where_clause:
+        where_conditions.append(where_clause)
+    where_conditions.append(f"{date_col} IS NOT NULL")
+
+    # Join all conditions with AND and add WHERE if needed
+    where_sql = f"WHERE {' AND '.join(where_conditions)}" if where_conditions else ""
 
     where = f"WHERE {where_clause}" if where_clause else ""
     sql = f"""
         SELECT {date_col} AS dt
         FROM {table}
-        {where}
-        AND {date_col} IS NOT NULL
-    """.replace("WHERE  AND", "WHERE ")
-
+        {where_sql}
+    """
     with sqlite3.connect(str(path)) as conn:
         df = pd.read_sql(sql, conn)
     
@@ -175,7 +181,8 @@ def plot_daily_cases_last_30_days(
         df=daily_df,
         sqlite_path=db_path,
         output_path=json_path,
-        filters=where_clause
+        filters=where_clause,
+        description="Quantidade de casos diários de Síndrome Respiratória Aguda Grave (SRAG) nos últimos 30 dias"
     )
 
     return None
@@ -248,7 +255,8 @@ def plot_monthly_cases_last_12_months(
         df=s_monthly,
         sqlite_path=db_path,
         output_path=json_path,
-        filters=where_clause
+        filters=where_clause,
+        description="Quantidade de casos mensais de Síndrome Respiratória Aguda Grave (SRAG) nos últimos 12 meses"
     )
     return None
 

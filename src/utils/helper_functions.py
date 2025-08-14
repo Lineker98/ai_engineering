@@ -67,7 +67,8 @@ def save_chart_data(
     df: pd.DataFrame,
     sqlite_path: str | Path,
     output_path: str | Path,
-    filters: Optional[str] = None
+    filters: Optional[str] = None,
+    description: str = None
     ) -> Optional[Path]:
     """_summary_
 
@@ -88,7 +89,8 @@ def save_chart_data(
                 "start": df.index.min().strftime("%Y-%m-%d"),
                 "end": df.index.max().strftime("%Y-%m-%d")
             },
-            "filters": filters or None
+            "filters": filters or None,
+            "description": description
         },
         "data": [
             {"date": d.strftime("%Y-%m-%d"), "cases": int(v)}
