@@ -1,8 +1,6 @@
 ## Data
 *.csv
-*.png
-*.svg
-*.json
+*.ipynb
 
 # Virtual Enviroment
 .venv/
