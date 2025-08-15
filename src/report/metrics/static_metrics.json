@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2025-08-14T19:23:49.038684+00:00",
+    "generated_at": "2025-08-15T14:14:13.161110+00:00",
     "sqlite_path": "data/marts/srag.sqlite"
   },
   "metrics": {
@@ -64,7 +64,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         count(*) as casos\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos,\n  lag(casos) over (order by date_month) as casos_prev,\n  round(100.0 * (casos - lag(casos) over (order by date_month))\n        / nullif(lag(casos) over (order by date_month), 0), 2) as taxa_aumento_pct\nfrom agg\norder by date_month;",
       "description": "Taxa de aumento de casos de SRAG - Grão mensal",
-      "ia_summary": "A taxa de aumento de casos de SRAG apresentou um crescimento explosivo em janeiro de 2025, com um aumento de 1045,85% em relação ao mês anterior. Após esse pico, os meses seguintes mostraram variações significativas, com um aumento contínuo até maio, seguido por uma queda acentuada em junho e julho, culminando em uma drástica redução de 99,8% em agosto."
+      "ia_summary": "A taxa de aumento de casos de SRAG apresentou um crescimento acentuado entre dezembro de 2024 e janeiro de 2025, com um aumento de 1045,85%. Após esse pico, os casos continuaram a crescer, mas a taxa de aumento começou a desacelerar, culminando em uma queda drástica de 99,8% em agosto de 2025."
     },
     "mortality_rate": {
       "name": "mortality_rate",
@@ -135,7 +135,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         sum(case when EVOLUCAO in (1,2,3) then 1 else 0 end) as casos_validos,\n         sum(case when EVOLUCAO = 2 then 1 else 0 end) as obitos_srag,\n         sum(case when EVOLUCAO in (2,3) then 1 else 0 end) as obitos_totais\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos_validos,\n  obitos_srag,\n  round(100.0 * obitos_srag / nullif(casos_validos, 0), 2) as taxa_mortalidade_pct,\n  round(100.0 * obitos_totais / nullif(casos_validos, 0), 2) as taxa_mortalidade_incl_outras_pct\nfrom agg\norder by date_month;",
       "description": "Taxa de mortalidade de SRAG - Grão mensal",
-      "ia_summary": "A taxa de mortalidade por SRAG apresentou uma tendência de queda ao longo dos meses analisados, passando de 12,27% em dezembro de 2024 para 6,17% em abril de 2025, com uma leve elevação em maio. Em junho, a taxa se manteve estável em 7,68%. Os dados de agosto de 2025 não apresentam casos ou óbitos, indicando um possível controle da situação nesse período."
+      "ia_summary": "A taxa de mortalidade por SRAG apresentou uma tendência de queda ao longo dos meses analisados, começando em 12,27% em dezembro de 2024 e alcançando 6,56% em julho de 2025. Apesar da variação, a taxa de mortalidade incluindo outras causas também se manteve elevada, indicando a gravidade da situação. Em agosto de 2025, não foram registrados casos ou óbitos."
     },
     "uti_utilization_rate": {
       "name": "uti_utilization_rate",

@@ -405,7 +405,7 @@ def generate_executive_report(
     print("Relatório 'relatorio_srag.pdf' gerado com sucesso!")
 
 
-def run():
+def run_report():
     """Executes the complete workflow to generate the executive report.
 
     This function serves as the main entry point for the report generation process.

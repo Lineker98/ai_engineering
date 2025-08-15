@@ -7,8 +7,11 @@ import trafilatura
 from datetime import timezone
 
 from ..utils.helper_functions import save_json_atomic
+from ..utils.logs_config import setup_logging
+import logging
 
-
+setup_logging()
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
@@ -40,6 +43,7 @@ def search_serper_news(
             - ``date`` (str | None) — data retornada pelo Serper
             - ``snippet`` (str | None)
     """
+    logger.info(f"Searching news with Serper API.")
     if not SERPER_API_KEY:
         raise RuntimeError("Defina SERPER_API_KEY no .env")
 
@@ -170,7 +174,7 @@ def save_news_results(
         },
         "articles": articles,
     }
-
+    logger.info(f"Saving SRAG news JSON at {output_path}.")
     return save_json_atomic(payload=payload, output_path=output_path)
 
 
@@ -200,6 +204,7 @@ def ingest_srag_news(query: str, output_path: str, top_k: int = 5) -> List[Dict]
     """
     results = search_serper_news(query, num_results=top_k)
     out = []
+    logger.info(f"Fetch and Parsing SRAG news.")
     for item in results:
         url = item.get("link")
         if not url:

@@ -5,7 +5,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from ..agents.schemas import MetricsBundle, MetricSeries
+from ..utils.logs_config import setup_logging
+import logging
 
+setup_logging()
+logger = logging.getLogger(__name__)
 
 METRIC_CONFIG: Dict[str, Dict[str, str]] = {
     "case_growth": {
@@ -66,9 +70,10 @@ def _plot_single_metric(
         None: This function saves files but does not return any value.
     """
     if df.empty:
-        print(f"[AVISO] Nenhum dado para plotar para o gráfico: {config['title']}")
+        logger.error("Nenhum dado para plotar para o gráfico: {config['title']}")
         return
 
+    df[config['x_col']] = pd.to_datetime(df[config['x_col']])
     df = df.sort_values(by=config["x_col"])
 
     plt.style.use("seaborn-v0_8-whitegrid")
@@ -137,9 +142,7 @@ def plot_static_metrics(
             f"Tipo de gráfico inválido: '{plot_type}'. Escolha entre 'line' ou 'bar'."
         )
 
-    print(
-        f"Gerando gráficos do tipo '{plot_type}' no diretório: {output_path.absolute()}"
-    )
+    logger.info( f"Generating images and saving at: {output_path.absolute()}")
 
     for metric_name, config in METRIC_CONFIG.items():
         metric_series: MetricSeries = getattr(bundle, metric_name)
@@ -150,5 +153,3 @@ def plot_static_metrics(
 
         # Passa o 'plot_type' para a função auxiliar
         _plot_single_metric(df, config, plot_filename, plot_type)
-
-    print("Gráficos gerados com sucesso!")

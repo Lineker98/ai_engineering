@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 from glob import glob
 from datetime import timezone, datetime
+import logging
 
 from .schemas import (
     NewsSummaryState,
@@ -15,8 +16,10 @@ from .schemas import (
 )
 from .prompt import PER_ARTICLE_SYSTEM, PER_ARTICLE_USER, AGG_SYSTEM, AGG_USER
 from ..utils.helper_functions import save_json_atomic
+from ..utils.logs_config import setup_logging
 
-
+setup_logging()
+logger = logging.getLogger(__name__)
 class SummaryAgent:
     """
     Agente de sumarização de notícias.
@@ -244,7 +247,8 @@ class SummaryAgent:
         articles = state.get("articles") or []
         summaries: List[NewsItemSummary] = []
         errors = list(state.get("errors") or [])
-
+        
+        logging.info("Summarizing news by news.")
         for index, article_raw in enumerate(articles):
             try:
                 article = self._coerce_article(article_raw)
@@ -260,6 +264,7 @@ class SummaryAgent:
                 )
                 summaries.append(summary)
             except Exception as e:
+                logging.error(f"Error {e} try to summarize nes {article.title} from {article.url}")
                 errors.append(f"article_{index}: {e}")
         return {"summaries": summaries, "errors": errors}
 
@@ -289,6 +294,7 @@ class SummaryAgent:
             )
             return {"executive_summary": executive_summary}
 
+        logging.info("Start to summarize all news summary")
         try:
             summaries_json = json.dumps(
                 [summary.model_dump() for summary in summaries], ensure_ascii=False
@@ -298,6 +304,7 @@ class SummaryAgent:
             )
             return {"executive_summary": executive_summary}
         except Exception as e:
+            logging.error(f"Error trying to summarize all news summary {e}")
             errors = list(state.get("errors") or [])
             errors.append(f"aggregate: {e}")
             executive_summary = NewsExecutiveSummary(
@@ -329,6 +336,7 @@ class SummaryAgent:
         if not output_dir:
             return {}
 
+        logging.error("Saving news report!")
         try:
             path = Path(output_dir)
             path.mkdir(parents=True, exist_ok=True)
@@ -350,6 +358,7 @@ class SummaryAgent:
             }
             save_json_atomic(payload, path / "news_summaries.json")
         except Exception as e:
+            logging.error(f"Error trying to save news report {e}")
             errors = list(state.get("errors") or [])
             errors.append(f"save: {e}")
             return {"errors": errors}
@@ -428,6 +437,7 @@ class SummaryAgent:
         Returns:
             Dict[str, Any]: Dicionário com `summaries`, `executive_summary` e `errors` produzidos pelo pipeline.
         """
+        logging.info("EXECUTING NEWS SUMMARIZER AGENT")
         path = Path(news_json_path)
         data = json.loads(path.read_text(encoding="utf-8"))
         articles = data.get("articles", [])

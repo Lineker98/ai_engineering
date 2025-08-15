@@ -2,6 +2,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Any, Dict, Optional, Callable, List
+import logging
 
 from langgraph.graph import StateGraph, END, START
 from langchain_openai import ChatOpenAI
@@ -19,7 +20,11 @@ from ..utils.report_queries import (
 from .prompt import SUMMARY_METRIC_SYSTEM, SUMMARY_METRIC_USER
 from ..utils.helper_functions import save_json_atomic
 from ..utils.plots import plot_static_metrics
+from ..utils.logs_config import setup_logging
 from pathlib import Path
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 class SRAGMetricsReport:
@@ -74,6 +79,8 @@ class SRAGMetricsReport:
             cols = [d[0] for d in cur.description] if cur.description else []
             rows = cur.fetchall()
             return [dict(zip(cols, r)) for r in rows]
+        except Exception as e:
+            logger.error(f"Error executing query: {e}")
         finally:
             conn.close()
 
@@ -91,6 +98,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state, with a new key 'case_growth' containing the time series data.
         """
+        logger.info("Query and analyze results for cases growth.")
         rows = self._query_rows(SQL_CASE_GROWTH)
         description = "Taxa de aumento de casos de SRAG - Grão mensal"
         name = "case_growth"
@@ -122,6 +130,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state, with a new key 'mortality_rate' containing the time series data.
         """
+        logger.info("Query and analyze results for mortality rate.")
         rows = self._query_rows(SQL_MORTALITY)
         description = "Taxa de mortalidade de SRAG - Grão mensal"
         name = "mortality_rate"
@@ -140,9 +149,9 @@ class SRAGMetricsReport:
         return {"results": res}
 
     def node_uti(self, state: ReportAgentState) -> ReportAgentState:
-        """Extracts and stores the SRAG ICU utilization rate in the pipeline state.
+        """Extracts and stores the SRAG UTI utilization rate in the pipeline state.
 
-        This function queries a database for monthly SRAG ICU utilization rate data, generates an
+        This function queries a database for monthly SRAG UTI utilization rate data, generates an
         AI-powered summary of the findings, and then packages this information into a `MetricSeries` object.
         It then updates the provided `ReportAgentState` with this new metric under the 'uti_utilization_rate' key.
 
@@ -152,6 +161,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state, with a new key 'uti_utilization_rate' containing the time series data.
         """
+        logger.info("Query and analyze results for UTI utilization.")
         rows = self._query_rows(SQL_UTI)
         description = "Taxa de ocupação de UTI - Grão mensal"
         name = "uti_utilization_rate"
@@ -183,6 +193,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state, with a new key 'vaccination_rate' containing the time series data.
         """
+        logger.info("Query and analyze results for Vacciation rate.")
         rows = self._query_rows(SQL_VACCINATION)
         description = "Taxa de vacinação contra COVID-19 - Grão mensal"
         name = "vaccination_rate"
@@ -209,6 +220,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state of the agent, with the `daily_cases` metric added to the results.
         """
+        logger.info("Query and analyze results for Daily cases for the last 30 days.")
         rows = self._query_rows(SQL_CASOS_DIARIOS_30_DIAS)
         description = "Casos diários de SRAG nos últimos 30 Dias"
         name = "daily_cases"
@@ -240,6 +252,7 @@ class SRAGMetricsReport:
         Returns:
             ReportAgentState: The updated state of the agent, with the `monthly_cases` metric added to the results.
         """
+        logger.info("Query and analyze results for Monthlt cases for the last 12 months.")
         rows = self._query_rows(SQL_CASOS_MENSAIS_12_MESES)
         description = "Casos mensais de SRAG nos últimos 12 meses"
         name = "monthly_cases"
@@ -329,14 +342,15 @@ class SRAGMetricsReport:
         plot_type = state.get("plot_type", "line")
 
         if not bundle:
-            print("[AVISO] Bundle de métricas está vazio. Nada a salvar ou plotar.")
+            logger.info("[AVISO] Bundle de métricas está vazio. Nada a salvar ou plotar.")
             return {}
 
         if save_path:
-            print(f"Salvando métricas em JSON em: {save_path}")
+            logger.info(f"Saving static metrics at {save_path}")
             self.save_bundle_metrics(bundle, save_path)
 
         if plot_dir:
+            logger.info(f"Ploting and saving static metrics at {plot_dir}")
             plot_static_metrics(bundle, plot_dir, plot_type=plot_type)
 
         return {}
@@ -358,7 +372,7 @@ class SRAGMetricsReport:
         graph = StateGraph(ReportAgentState)
         graph.add_node("metrics_case_growth", self.node_case_growth)
         graph.add_node("metrics_mortality", self.node_mortality)
-        graph.add_node("metrics_icu", self.node_uti)
+        graph.add_node("metrics_UTI", self.node_uti)
         graph.add_node("metrics_vaccination", self.node_vaccination)
         graph.add_node("daily_cases", self.node_casos_diarios)
         graph.add_node("monthly_cases", self.node_casos_mensais)
@@ -367,8 +381,8 @@ class SRAGMetricsReport:
 
         graph.add_edge(START, "metrics_case_growth")
         graph.add_edge("metrics_case_growth", "metrics_mortality")
-        graph.add_edge("metrics_mortality", "metrics_icu")
-        graph.add_edge("metrics_icu", "metrics_vaccination")
+        graph.add_edge("metrics_mortality", "metrics_UTI")
+        graph.add_edge("metrics_UTI", "metrics_vaccination")
         graph.add_edge("metrics_vaccination", "daily_cases")
         graph.add_edge("daily_cases", "monthly_cases")
         graph.add_edge("monthly_cases", "aggregate_final")
@@ -415,6 +429,8 @@ class SRAGMetricsReport:
             "plot_type": plot_type,
             "results": {},
         }
+        logger.info("EXECUTING STATIC METRICS AGENT")
         output = app.invoke(init_state)
+        logger.info(f"Succesfull generate all necessary metrics!")
         bundle = output["bundle"]
         return bundle

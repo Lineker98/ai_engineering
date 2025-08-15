@@ -1,10 +1,10 @@
 from src.agents.srag_sql_agent import SRAGSQLAgentApp
-from src.agents.srag_report_agent import SRAGMetricsReport
-from src.agents.srag_summary_agent import SummaryAgent
+from agents.srag_metrics_agent import SRAGMetricsReport
+from agents.srag_news_summary_agent import SummaryAgent
 from src.etl.news_ingest import ingest_srag_news
 from dotenv import load_dotenv
 import os
-from src.report.generate_pdf import run
+from src.report.generate_pdf import run_report
 
 load_dotenv()
 openai_api_key = os.getenv('OPENAI_API_KEY')
@@ -25,14 +25,13 @@ plot_dir_metrics = 'src/report/imgs'
 
 
 # query = '("Síndrome Respiratória Aguda Grave" OR SRAG) (Brasil OR estados) (Covid OR Influenza OR VSR)'
-# output_path = "data/marts/srag_news.json"
-
+output_path = "data/marts/srag_news.json"
 # articles = ingest_srag_news(query=query, output_path=output_path, top_k=10)
 
-# agent = SummaryAgent(model="gpt-4o-mini")
-# out = agent.run(
-#     news_json_path=output_path,
-#     save_dir="src/report/summaries",
-#     meta={"query": "SRAG Brasil"}
-# )
-run()
+agent = SummaryAgent(model="gpt-4o-mini")
+out = agent.run(
+    news_json_path=output_path,
+    save_dir="src/report/summaries",
+    meta={"query": "SRAG Brasil"}
+)
+# run_report()
