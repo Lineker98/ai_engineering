@@ -4,7 +4,7 @@ from src.agents.srag_summary_agent import SummaryAgent
 from src.etl.news_ingest import ingest_srag_news
 from dotenv import load_dotenv
 import os
-import json
+from src.report.generate_pdf import run
 
 load_dotenv()
 openai_api_key = os.getenv('OPENAI_API_KEY')
@@ -20,8 +20,8 @@ plot_dir_metrics = 'src/report/imgs'
 #print(result)
 #print(result.model_dump())
 
-agent_metrics_report = SRAGMetricsReport(sqlite_path=df_path)
-bundle = agent_metrics_report.run(save_path=metrics_output, plot_dir=plot_dir_metrics)
+# agent_metrics_report = SRAGMetricsReport(sqlite_path=df_path)
+# bundle = agent_metrics_report.run(save_path=metrics_output, plot_dir=plot_dir_metrics)
 
 
 # query = '("Síndrome Respiratória Aguda Grave" OR SRAG) (Brasil OR estados) (Covid OR Influenza OR VSR)'
@@ -35,3 +35,4 @@ bundle = agent_metrics_report.run(save_path=metrics_output, plot_dir=plot_dir_me
 #     save_dir="src/report/summaries",
 #     meta={"query": "SRAG Brasil"}
 # )
+run()
