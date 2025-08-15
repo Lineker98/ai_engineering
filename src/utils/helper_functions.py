@@ -2,27 +2,26 @@ import json
 import os
 import tempfile
 from pathlib import Path
-from datetime import datetime, timezone
 import pandas as pd
-from typing import Optional, Dict
-
-from pathlib import Path
 from datetime import datetime, timezone, date
-import tempfile, json, os
 from typing import Any, Dict, Optional
 
 
 def _json_default(o: Any):
-    """_summary_
+    """Serializes datetime and date objects into ISO format for JSON.
+
+    This function is intended to be used as the `default` parameter in `json.dump()` or `json.dumps()`.
+    It handles objects that are not natively JSON serializable by converting `datetime` and `date`
+    objects to a standard string representation.
 
     Args:
-        o (Any): _description_
+        o (Any): The object to be serialized.
 
     Raises:
-        TypeError: _description_
+        TypeError: If the object is not a `datetime` or `date` instance and is not otherwise JSON serializable.
 
     Returns:
-        _type_: _description_
+        str: The ISO 8601 formatted string representation of the object.
     """
     if isinstance(o, (datetime, date)):
         return o.isoformat()
@@ -30,14 +29,18 @@ def _json_default(o: Any):
 
 
 def save_json_atomic(payload: Dict[str, Any], output_path: str) -> Optional[Path]:
-    """_summary_
+    """Atomically saves a dictionary to a JSON file.
+
+    This function writes the JSON data to a temporary file first, and then
+    atomically replaces the final output file. This prevents file corruption
+    if the process is interrupted during the write operation.
 
     Args:
-        payload (Dict[str, Any]): _description_
-        output_path (str): _description_
+        payload (Dict[str, Any]): The dictionary containing the data to be saved.
+        output_path (str): The final destination path for the JSON file.
 
     Returns:
-        Optional[Path]: _description_
+        Optional[Path]: A Path object for the saved file on success, or None on failure.
     """
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -68,18 +71,23 @@ def save_chart_data(
     sqlite_path: str | Path,
     output_path: str | Path,
     filters: Optional[str] = None,
-    description: str = None
-    ) -> Optional[Path]:
-    """_summary_
+    description: str = None,
+) -> Optional[Path]:
+    """Prepares and saves chart data from a DataFrame to a JSON file.
+
+    This function structures a pandas DataFrame into a dictionary payload containing
+    metadata and a list of data points. It then uses the `save_json_atomic`
+    function to safely write this data to a JSON file.
 
     Args:
-        df (pd.DataFrame): _description_
-        sqlite_path (str | Path): _description_
-        output_path (str | Path): _description_
-        filters (Optional[str], optional): _description_. Defaults to None.
+        df (pd.DataFrame): The input DataFrame with a datetime index and a single column of numerical data.
+        sqlite_path (Union[str, Path]): The path to the SQLite database file from which the data was queried.
+        output_path (Union[str, Path]): The path where the final JSON file will be saved.
+        filters (Optional[str], optional): A string detailing any filters applied to the data. Defaults to None.
+        description (Optional[str], optional): A descriptive summary of the data being saved. Defaults to None.
 
     Returns:
-        Optional[Path]: _description_
+        Optional[Path]: A Path object for the saved file on success, or None on failure.
     """
     payload = {
         "meta": {
@@ -87,14 +95,51 @@ def save_chart_data(
             "sqlite_path": str(sqlite_path),
             "date_range": {
                 "start": df.index.min().strftime("%Y-%m-%d"),
-                "end": df.index.max().strftime("%Y-%m-%d")
+                "end": df.index.max().strftime("%Y-%m-%d"),
             },
             "filters": filters or None,
-            "description": description
+            "description": description,
         },
         "data": [
             {"date": d.strftime("%Y-%m-%d"), "cases": int(v)}
             for d, v in zip(df.index, df.values)
-        ]
+        ],
     }
     save_json_atomic(payload=payload, output_path=output_path)
+
+
+def load_json(json_path: str) -> Dict[str, str]:
+    """Loads data from a JSON file into a Python dictionary.
+
+    Args:
+        json_path (str): The file path to the JSON file to be loaded.
+
+    Returns:
+        Dict[str, str]: The data from the JSON file as a dictionary.
+    """
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
+
+
+def extrair_ia_summary(json_path: str) -> Dict[str, str]:
+    """Loads a JSON file and extracts AI-generated summaries for each metric.
+
+    This function reads a JSON file, typically containing metric data, and filters it to create a dictionary of
+    just the 'ia_summary' fields. This is useful for isolating the AI-generated text for further use in a report.
+
+    Args:
+        json_path (str): The file path to the JSON file to be processed.
+
+    Returns:
+        Dict[str, str]: A dictionary where keys are metric names and values are their corresponding AI summaries.
+    """
+    data = load_json(json_path=json_path)
+
+    summaries = {
+        nome_metrica: conteudo.get("ia_summary", "")
+        for nome_metrica, conteudo in data.get("metrics", {}).items()
+        if "ia_summary" in conteudo
+    }
+
+    return summaries
