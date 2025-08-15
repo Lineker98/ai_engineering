@@ -1,7 +1,7 @@
 import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Dict, Optional, Callable, List
 
 from langgraph.graph import StateGraph, END, START
 from langchain_openai import ChatOpenAI
@@ -14,12 +14,9 @@ from ..utils.report_queries import (
     SQL_MORTALITY,
     SQL_VACCINATION,
     SQL_CASOS_DIARIOS_30_DIAS,
-    SQL_CASOS_MENSAIS_12_MESES
+    SQL_CASOS_MENSAIS_12_MESES,
 )
-from .prompt import (
-    SUMMARY_METRIC_SYSTEM,
-    SUMMARY_METRIC_USER
-)
+from .prompt import SUMMARY_METRIC_SYSTEM, SUMMARY_METRIC_USER
 from ..utils.helper_functions import save_json_atomic
 from ..utils.plots import plot_static_metrics
 from pathlib import Path
@@ -38,26 +35,37 @@ class SRAGMetricsReport:
         self.sqlite_path = sqlite_path
         self.llm = ChatOpenAI(model=model, temperature=temperature)
         self.chain = self._build_summary_chain()
-        
+
     def _build_summary_chain(self):
-        """
-        
+        """Constructs and returns a LangChain processing chain for metric summaries.
+
+        This private method creates a `ChatPromptTemplate` from predefined system and user messages.
+        It then pipes this prompt template to the class's language model (`self.llm`) to form a complete,
+        executable chain. This chain is designed to be invoked with data to generate an AI-powered summary.
+
+        Returns:
+            The LangChain-style object representing the processing chain.
         """
         prompt = ChatPromptTemplate.from_messages(
             [("system", SUMMARY_METRIC_SYSTEM), ("user", SUMMARY_METRIC_USER)]
         )
         return prompt | self.llm
 
-    def _query_rows(self, sql: str, params: Optional[Dict[str, Any]] = {}):
-        """
-        Executa uma consulta SQL no banco SQLite configurado e retorna os resultados como lista de dicionários.
+    def _query_rows(
+        self, sql: str, params: Optional[Dict[str, Any]] = {}
+    ) -> List[Dict]:
+        """Executes a SQL query and returns the results as a list of dictionaries.
+
+        This helper method connects to a SQLite database, runs a parameterized SQL query, and fetches all the results.
+        It then maps the column names to each row's values, returning the data in a user-friendly list of dictionaries.
+        The database connection is always closed after the operation.
 
         Args:
-            sql (str): Instrução SQL a ser executada.
-            params (Optional[Dict[str, Any]]): Parâmetros opcionais para a query.
+            sql (str): The SQL query string to be executed.
+            params (Optional[Dict[str, Any]], optional): A dictionary of parameters for the query to prevent SQL injection. Defaults to {}.
 
         Returns:
-            List[Dict[str, Any]]: Lista de linhas da consulta, cada uma como dicionário {coluna: valor}.
+            List[Dict]: A list of dictionaries, where each dictionary represents a row from the query result.
         """
         conn = sqlite3.connect(self.sqlite_path)
         try:
@@ -70,168 +78,197 @@ class SRAGMetricsReport:
             conn.close()
 
     def node_case_growth(self, state: ReportAgentState) -> ReportAgentState:
-        """
-        Extrai e armazena no estado a métrica de crescimento de casos de SRAG.
+        """Extracts and stores the SRAG case growth metric in the pipeline state.
+
+        This function queries a database for monthly SRAG case growth data, generates an
+        AI-powered summary of the findings, and then packages this information into a
+        `MetricSeries` object. It then updates the provided `ReportAgentState` with this
+        new metric under the 'case_growth' key.
 
         Args:
-            state (ReportAgentState): Estado atual do pipeline contendo resultados parciais.
+            state (ReportAgentState): The current state of the pipeline, which contains partial results.
 
         Returns:
-            ReportAgentState: Estado atualizado com a chave 'case_growth' contendo a série temporal.
+            ReportAgentState: The updated state, with a new key 'case_growth' containing the time series data.
         """
         rows = self._query_rows(SQL_CASE_GROWTH)
         description = "Taxa de aumento de casos de SRAG - Grão mensal"
         name = "case_growth"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
-        series = MetricSeries(name=name, rows=rows, sql_used=SQL_CASE_GROWTH, description=description, ia_summary=ia_summary.content)
+        series = MetricSeries(
+            name=name,
+            rows=rows,
+            sql_used=SQL_CASE_GROWTH,
+            description=description,
+            ia_summary=ia_summary.content,
+        )
         res = state["results"]
         res[name] = series
         return {"results": res}
 
     def node_mortality(self, state: ReportAgentState) -> ReportAgentState:
-        """
-        Extrai e armazena no estado a taxa de mortalidade por SRAG.
+        """Extracts and stores the SRAG mortality rate in the pipeline state.
+
+        This function queries a database for monthly SRAG mortality rate data, generates an
+        AI-powered summary of the findings, and then packages this information into a
+        `MetricSeries` object. It then updates the provided `ReportAgentState` with this
+        new metric under the 'mortality_rate' key.
 
         Args:
-            state (ReportAgentState): Estado atual do pipeline contendo resultados parciais.
+            state (ReportAgentState): The current state of the pipeline, which contains partial results.
 
         Returns:
-            ReportAgentState: Estado atualizado com a chave 'mortality_rate' contendo a série temporal.
+            ReportAgentState: The updated state, with a new key 'mortality_rate' containing the time series data.
         """
         rows = self._query_rows(SQL_MORTALITY)
         description = "Taxa de mortalidade de SRAG - Grão mensal"
         name = "mortality_rate"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
-        series = MetricSeries(name=name, rows=rows, sql_used=SQL_MORTALITY, description=description, ia_summary=ia_summary.content)
+        series = MetricSeries(
+            name=name,
+            rows=rows,
+            sql_used=SQL_MORTALITY,
+            description=description,
+            ia_summary=ia_summary.content,
+        )
         res = state["results"]
         res[name] = series
         return {"results": res}
 
     def node_uti(self, state: ReportAgentState) -> ReportAgentState:
-        """
-        Extrai e armazena no estado a taxa de ocupação de UTI por casos de SRAG.
+        """Extracts and stores the SRAG ICU utilization rate in the pipeline state.
+
+        This function queries a database for monthly SRAG ICU utilization rate data, generates an
+        AI-powered summary of the findings, and then packages this information into a `MetricSeries` object.
+        It then updates the provided `ReportAgentState` with this new metric under the 'uti_utilization_rate' key.
 
         Args:
-            state (ReportAgentState): Estado atual do pipeline contendo resultados parciais.
+            state (ReportAgentState): The current state of the pipeline, which contains partial results.
 
         Returns:
-            ReportAgentState: Estado atualizado com a chave 'uti_utilization_rate' contendo a série temporal.
+            ReportAgentState: The updated state, with a new key 'uti_utilization_rate' containing the time series data.
         """
         rows = self._query_rows(SQL_UTI)
         description = "Taxa de ocupação de UTI - Grão mensal"
         name = "uti_utilization_rate"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
-        series = MetricSeries(name=name, rows=rows, sql_used=SQL_UTI, description=description, ia_summary=ia_summary.content)
+        series = MetricSeries(
+            name=name,
+            rows=rows,
+            sql_used=SQL_UTI,
+            description=description,
+            ia_summary=ia_summary.content,
+        )
         res = state["results"]
         res[name] = series
         return {"results": res}
 
     def node_vaccination(self, state: ReportAgentState) -> ReportAgentState:
-        """
-        Extrai e armazena no estado a taxa de vacinação entre pacientes de SRAG.
+        """Extracts and stores the SRAG patient vaccination rate in the pipeline state.
+
+        This function queries a database for monthly COVID-19 vaccination rates among
+        Severe Acute Respiratory Syndrome (SRAG) patients. It then generates an AI-powered summary
+        of this data, packages it into a `MetricSeries` object, and updates the `ReportAgentState`
+        with this new metric under the 'vaccination_rate' key.
 
         Args:
-            state (ReportAgentState): Estado atual do pipeline contendo resultados parciais.
+            state (ReportAgentState): The current state of the pipeline, which contains partial results.
 
         Returns:
-            ReportAgentState: Estado atualizado com a chave 'vaccination_rate' contendo a série temporal.
+            ReportAgentState: The updated state, with a new key 'vaccination_rate' containing the time series data.
         """
         rows = self._query_rows(SQL_VACCINATION)
         description = "Taxa de vacinação contra COVID-19 - Grão mensal"
         name = "vaccination_rate"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
         series = MetricSeries(
-            name=name, rows=rows, sql_used=SQL_VACCINATION, description=description, ia_summary=ia_summary.content
+            name=name,
+            rows=rows,
+            sql_used=SQL_VACCINATION,
+            description=description,
+            ia_summary=ia_summary.content,
         )
         res = state["results"]
         res[name] = series
         return {"results": res}
-    
+
     def node_casos_diarios(self, state: ReportAgentState) -> ReportAgentState:
-        """_summary_
+        """Queries daily case data, generates an AI summary, and adds it to the agent's state.
 
         Args:
-            state (ReportAgentState): _description_
+            state (ReportAgentState): The current state of the agent, containing a dictionary of results from previous processing steps.
 
         Returns:
-            ReportAgentState: _description_
+            ReportAgentState: The updated state of the agent, with the `daily_cases` metric added to the results.
         """
         rows = self._query_rows(SQL_CASOS_DIARIOS_30_DIAS)
         description = "Casos diários de SRAG nos últimos 30 Dias"
         name = "daily_cases"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
         series = MetricSeries(
-            name=name, rows=rows, sql_used=SQL_CASOS_DIARIOS_30_DIAS, description=description, ia_summary=ia_summary.content
+            name=name,
+            rows=rows,
+            sql_used=SQL_CASOS_DIARIOS_30_DIAS,
+            description=description,
+            ia_summary=ia_summary.content,
         )
         res = state["results"]
         res[name] = series
         return {"results": res}
-    
+
     def node_casos_mensais(self, state: ReportAgentState) -> ReportAgentState:
-        """_summary_
+        """Queries monthly case data, generates an AI summary, and adds it to the agent's state.
+
+        This function acts as a processing node that executes a SQL query to retrieve the monthly count of
+        Severe Acute Respiratory Syndrome (SRAG) cases over the last 12 months.
+        It then uses an AI model to generate a summary of this data before packaging the results into a `MetricSeries` object.
+        Finally, it updates the `ReportAgentState` with this new metric.
 
         Args:
-            state (ReportAgentState): _description_
+            state (ReportAgentState): The current state of the agent, containing a dictionary of results from previous processing steps.
 
         Returns:
-            ReportAgentState: _description_
+            ReportAgentState: The updated state of the agent, with the `monthly_cases` metric added to the results.
         """
         rows = self._query_rows(SQL_CASOS_MENSAIS_12_MESES)
         description = "Casos mensais de SRAG nos últimos 12 meses"
         name = "monthly_cases"
         ia_summary = self.chain.invoke(
-            {
-                "name": name,
-                "rows": rows,
-                "description": description
-            }
+            {"name": name, "rows": rows, "description": description}
         )
         series = MetricSeries(
-            name=name, rows=rows, sql_used=SQL_CASOS_DIARIOS_30_DIAS, description=description, ia_summary=ia_summary.content
+            name=name,
+            rows=rows,
+            sql_used=SQL_CASOS_DIARIOS_30_DIAS,
+            description=description,
+            ia_summary=ia_summary.content,
         )
         res = state["results"]
         res[name] = series
         return {"results": res}
 
     def node_aggregate_final(self, state: ReportAgentState) -> ReportAgentState:
-        """
-        Agrega todas as métricas calculadas em um objeto `MetricsBundle`.
+        """Aggregates all calculated metrics into a single MetricsBundle object.
+
+        This final node in the processing pipeline retrieves all individual metric series from the agent's state dictionary.
+        It then bundles them together into a structured `MetricsBundle` object,
+        which is then stored in the state under the 'bundle' key for final use.
 
         Args:
-            state (ReportAgentState): Estado atual contendo todas as métricas calculadas.
+            state (ReportAgentState): The current state containing all previously calculated and stored metrics.
 
         Returns:
-            ReportAgentState: Estado atualizado com a chave 'bundle' contendo o pacote final de métricas.
+            ReportAgentState: The updated state, with a new key 'bundle' containing the final aggregated metrics.
         """
         results = state["results"]
         bundle = MetricsBundle(
@@ -240,23 +277,27 @@ class SRAGMetricsReport:
             uti_utilization_rate=results["uti_utilization_rate"],
             vaccination_rate=results["vaccination_rate"],
             daily_cases=results["daily_cases"],
-            monthly_cases=results["monthly_cases"]
+            monthly_cases=results["monthly_cases"],
         )
         return {"bundle": bundle}
-        
 
     def save_bundle_metrics(
         self, bundle: MetricsBundle, output_path=str
     ) -> Optional[Path]:
-        """
-        Salva o pacote de métricas (`MetricsBundle`) em um arquivo JSON, com metadados de geração.
+        """Saves a MetricsBundle object to a JSON file with generation metadata.
+
+        This function prepares a payload by adding generation metadata, such as the
+        timestamp and source database path, to the provided `MetricsBundle`. It then
+        uses the `save_json_atomic` function to safely write this data to the
+        specified JSON file.
 
         Args:
-            bundle (MetricsBundle): Pacote de métricas a ser salvo.
-            output_path (str): Caminho de saída do arquivo JSON.
+            bundle (MetricsBundle): The MetricsBundle object containing all the
+                                    metrics to be saved.
+            output_path (str): The file path where the JSON file will be saved.
 
         Returns:
-            Optional[Path]: Caminho final do arquivo salvo, ou None se falhar.
+            Optional[Path]: A Path object for the saved file on success, or None on failure.
         """
 
         payload = {
@@ -270,14 +311,17 @@ class SRAGMetricsReport:
         return path
 
     def node_save_and_plot(self, state: ReportAgentState) -> Dict:
-        """
-        Salva as métricas em JSON e/ou gera gráficos estáticos, conforme parâmetros no estado.
+        """Saves metrics to a JSON file and/or generates static plots based on the state parameters.
+
+        This function acts as a terminal node in the pipeline. It checks the provided state for a metrics bundle,
+        a save path, and a plot directory. If these are present, it calls the appropriate helper functions
+        to save the metrics as a JSON file and/or generate static chart images.
 
         Args:
-            state (ReportAgentState): Estado contendo o bundle de métricas, caminhos de saída e tipo de gráfico.
+            state (ReportAgentState): The state object containing the final metrics bundle, output paths for saving, and the desired plot type.
 
         Returns:
-            dict: Dicionário vazio (nó terminal do pipeline).
+            Dict: An empty dictionary, signaling that this is a terminal node and no further state needs to be passed.
         """
         bundle = state["bundle"]
         save_path = state.get("save_path")
@@ -298,11 +342,18 @@ class SRAGMetricsReport:
         return {}
 
     def build_graph(self) -> Callable:
-        """
-        Constrói e compila o grafo de execução do pipeline de métricas SRAG.
+        """Constructs and compiles the execution graph for the SRAG metrics pipeline.
+
+        This method defines a linear workflow using the `StateGraph` library.
+        It adds a series of processing nodes, each corresponding to a specific metric extraction or finalization step.
+        The edges are defined to create a sequential flow from start to end, and the entire graph is
+        then compiled into a single, executable function.
+
+        Args:
+            self: The instance of the class containing the node methods.
 
         Returns:
-            Callable: Função compilada que executa o fluxo definido.
+            Callable: The compiled function that executes the defined workflow.
         """
         graph = StateGraph(ReportAgentState)
         graph.add_node("metrics_case_growth", self.node_case_growth)
@@ -334,22 +385,26 @@ class SRAGMetricsReport:
         plot_dir: str = None,
         plot_type: str = "line",
     ) -> MetricsBundle:
-        """
-        Executa o pipeline completo de cálculo de métricas SRAG:
-        - Coleta dados via SQL
-        - Calcula métricas
-        - Agrega resultados
-        - Salva e plota se configurado
+        """Executes the complete SRAG metrics calculation pipeline.
+
+        This function serves as the main entry point for the entire workflow.
+        It builds and runs a state-based graph that performs the following steps:
+        - Collects data from a SQL database.
+        - Calculates various metrics.
+        - Aggregates all results into a single bundle.
+        - Optionally saves the metrics to a JSON file and/or generates plots based on the provided parameters.
 
         Args:
-            start_date (Optional[date]): Data inicial para filtro (não implementado nas queries padrão).
-            end_date (Optional[date]): Data final para filtro (não implementado nas queries padrão).
-            save_path (str): Caminho para salvar o JSON com métricas.
-            plot_dir (str): Diretório para salvar gráficos gerados.
-            plot_type (str): Tipo de gráfico a ser gerado ('line', 'bar', etc.).
+            start_date (Optional[date], optional): The start date for filtering data. Note that this is not
+                implemented in the standard queries. Defaults to None.
+            end_date (Optional[date], optional): The end date for filtering data.
+                Also not implemented in the standard queries. Defaults to None.
+            save_path (str, optional): The file path where the metrics JSON file will be saved. Defaults to None.
+            plot_dir (str, optional): The directory where the generated plot images will be saved. Defaults to None.
+            plot_type (str, optional): The type of chart to generate (e.g., 'line' or 'bar'). Defaults to 'line'.
 
         Returns:
-            MetricsBundle: Pacote final contendo todas as métricas calculadas.
+            MetricsBundle: The final bundle containing all the calculated metrics.
         """
         app = self.build_graph()
         init_state = {
