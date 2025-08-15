@@ -1,4 +1,3 @@
-# queries.py
 """
 SQLs pré-definidas para construção do report
 """
