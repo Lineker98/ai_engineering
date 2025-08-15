@@ -1,9 +1,9 @@
 import sqlite3
 import pandas as pd
-
+from pathlib import Path
 
 def load_to_sqlite(
-    df: pd.DataFrame, db_path="data/srag.sqlite", table_name="srag_data"
+    df: pd.DataFrame, db_path="data/srag.sqlite", table_name="/marts/srag_data"
 ) -> None:
     """Carrega um DataFrame do pandas para uma tabela SQLite (cria/atualiza a tabela).
 
@@ -24,6 +24,7 @@ def load_to_sqlite(
 
 
 if __name__ == "__main__":
-    data_path = "data\data_clean.csv"
+    data_path = Path("data/staging/int_srag.csv")
+    output_path = Path("data/marts/srag.sqlite")
     df = pd.read_csv(data_path)
-    load_to_sqlite(df=df)
+    load_to_sqlite(df=df, db_path=output_path)

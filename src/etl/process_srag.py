@@ -25,7 +25,7 @@ def convert_to_datetime(
     return df
 
 
-def load_df(df_path: str, sep=";", encoding="latin1", low_memory=False) -> pd.DataFrame:
+def load_dataframes(base_path: List[str], sep=";", encoding="latin1", low_memory=False) -> pd.DataFrame:
     """
     Carrega um arquivo CSV em um DataFrame do pandas.
 
@@ -38,7 +38,9 @@ def load_df(df_path: str, sep=";", encoding="latin1", low_memory=False) -> pd.Da
     Returns:
         pd.DataFrame: DataFrame contendo os dados carregados.
     """
-    df = pd.read_csv(df_path, sep=sep, encoding=encoding, low_memory=low_memory)
+    csv_files = list(base_path.glob("*.csv"))
+    list_of_dfs = [pd.read_csv(f, sep=";", encoding="latin1", low_memory=False) for f in csv_files]
+    df = pd.concat(list_of_dfs, ignore_index=True)
     print("Carregamento de dados realizado!")
     return df
 
@@ -94,11 +96,11 @@ if __name__ == "__main__":
     ]
 
     data_dir = Path("data")
-    df_raw_path = data_dir / "raw" / "INFLUD25-04-08-2025.csv"
+    base_path = data_dir / "raw"
     output_path = data_dir / "staging" / "int_srag.csv"
 
     # Load the raw SRAG data
-    df = load_df(df_raw_path)
+    df = load_dataframes(base_path=base_path)
 
     # Convert the datetime columns
     df = convert_to_datetime(df=df, columns_formats=COLUMNS_FORMATS)
