@@ -196,6 +196,7 @@ def add_final_summary(
 
 
 def generate_executive_report(
+    output_path: Path | str,
     overall_summary: str,
     high_lights: str,
     consensus: str,
@@ -225,7 +226,7 @@ def generate_executive_report(
 
     # 1. SETUP DO DOCUMENTO
     doc = SimpleDocTemplate(
-        "relatorio_epidemiologico_srag.pdf",
+        output_path,
         pagesize=A4,
         rightMargin=2 * cm,
         leftMargin=2 * cm,
@@ -402,10 +403,9 @@ def generate_executive_report(
         source_style=bullets_style,
     )
     doc.build(story)
-    print("Relatório 'relatorio_srag.pdf' gerado com sucesso!")
 
 
-def run_report():
+def run_report(output_path: str):
     """Executes the complete workflow to generate the executive report.
 
     This function serves as the main entry point for the report generation process.
@@ -434,6 +434,7 @@ def run_report():
 
     metrics_summaries = extrair_ia_summary(metrics_path)
     generate_executive_report(
+        output_path=output_path,
         overall_summary=overall_summary,
         high_lights=high_lights,
         consensus=consensus,
