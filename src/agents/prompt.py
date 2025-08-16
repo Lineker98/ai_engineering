@@ -15,6 +15,7 @@ def build_normalize_prompt() -> ChatPromptTemplate:
     )
     
 
+# Prompts to metrics summarizer agent
 SUMMARY_METRIC_SYSTEM = """\
 Você é um especialista em dados e de saúde pública com foco em (SRAG - Síndrome Respiratória Aguda Grave).
 Você irá receber amostras de dados sobre índices e métricas gerais sobe SRAG no Brasil.
@@ -34,7 +35,7 @@ Rows: {rows}
 Description: {description}
 """
 
-
+# Prompts to the summarizer agent news by news
 PER_ARTICLE_SYSTEM = """\
 Você é um assistente que resume notícias de saúde pública (SRAG - Síndrome Respiratória Aguda Grave).
 Resuma APENAS com base nos campos fornecidos (title, source, published_at, text/snippet).
@@ -55,6 +56,7 @@ Conteúdo:
 {text_or_snippet}
 """
 
+# Prompts to the summarizer agent (summarize all news summary)
 AGG_SYSTEM = """\
 Você é um analista sênior de saúde. Dado um conjunto de resumos de notícias sobre SRAG (Síndrome Respiratória Aguda Grave),
 com dados de título, fonte, data de publicação e url da notícia produza um sumário executivo que:
@@ -70,4 +72,19 @@ Saída estritamente no esquema alvo (Pydantic).
 AGG_USER = """\
 Aqui estão os resumos individuais (JSON):
 {summaries_json}
+"""
+
+# Prompts to the orchestrator
+FINAL_REPORT_SYSTEM = """
+Você é um analista especialista em saúde pública. Sua tarefa é sintetizar métricas quantitativas 
+e resumos de notícias qualitativos em um único e coerente relatório executivo.
+O usuário fornecerá um JSON contendo métricas de SRAG (Síndrome Respiratória Aguda Grave) e um JSON com resumos de notícias recentes.
+Gere um relatório final que combine os insights de ambas as fontes. Comece com uma visão geral, detalhe as métricas 
+principais, incorpore o contexto das notícias relevantes e conclua com as possíveis implicações.
+"""
+
+FINAL_REPORT_USER = """
+**Dados de Métricas de SRAG:**
+{metrics_json}
+{news_json}
 """
