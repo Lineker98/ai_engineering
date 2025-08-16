@@ -17,6 +17,7 @@ select
   round(100.0 * (casos - lag(casos) over (order by date_month))
         / nullif(lag(casos) over (order by date_month), 0), 2) as taxa_aumento_pct
 from agg
+where date_month >= strftime('%Y-%m', date('now', '-12 months'))
 order by date_month;
 """.strip()
 
@@ -37,6 +38,7 @@ select
   round(100.0 * obitos_srag / nullif(casos_validos, 0), 2) as taxa_mortalidade_pct,
   round(100.0 * obitos_totais / nullif(casos_validos, 0), 2) as taxa_mortalidade_incl_outras_pct
 from agg
+where date_month >= strftime('%Y-%m', date('now', '-12 months'))
 order by date_month;
 """.strip()
 
@@ -55,6 +57,7 @@ select
   uti_sim,
   round(100.0 * uti_sim / nullif(casos_com_info_uti, 0), 2) as taxa_ocupacao_uti_pct
 from agg
+where date_month >= strftime('%Y-%m', date('now', '-12 months'))
 order by date_month;
 """.strip()
 
@@ -73,6 +76,7 @@ select
   vacinados,
   round(100.0 * vacinados / nullif(casos_com_info_vac, 0), 2) as taxa_vacinacao_casos_pct
 from agg
+where date_month >= strftime('%Y-%m', date('now', '-12 months'))
 order by date_month;
 """.strip()
 
