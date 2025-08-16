@@ -97,7 +97,8 @@ def _plot_single_metric(
             label="Valor Mensal",
         )
 
-    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: f"{y:.1f}%"))
+    if "%" in config['ylabel']:
+        ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: f"{y:.1f}%"))
     ax.set_title(config["title"], fontsize=16, weight="bold", pad=20)
     ax.set_ylabel(config["ylabel"], fontsize=12)
     if config["x_col"] == "data":
