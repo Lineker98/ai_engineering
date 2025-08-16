@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 def load_to_sqlite(
-    df: pd.DataFrame, db_path="data/srag.sqlite", table_name="/marts/srag_data"
+    df: pd.DataFrame, db_path="data/marts/srag.sqlite", table_name="srag_data"
 ) -> None:
     """Carrega um DataFrame do pandas para uma tabela SQLite (cria/atualiza a tabela).
 
