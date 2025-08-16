@@ -1,8 +1,7 @@
 {
   "meta": {
-    "generated_at": "2025-08-15T14:24:28.813655+00:00",
-    "model": "gpt-4o-mini",
-    "query": "SRAG Brasil"
+    "generated_at": "2025-08-16T20:00:00.218882+00:00",
+    "model": "gpt-4o-mini"
   },
   "summaries": [
     {
@@ -10,68 +9,71 @@
       "url": "https://agenciabrasil.ebc.com.br/radioagencia-nacional/saude/audio/2025-08/casos-de-sindrome-respiratoria-aguda-grave-aumentam-entre-criancas",
       "source": "Agência Brasil",
       "published_at": null,
-      "summary": "O aumento de casos de Síndrome Respiratória Aguda Grave (SRAG) entre crianças foi reportado, destacando a necessidade de atenção à saúde infantil. A situação requer monitoramento e possíveis intervenções para mitigar os riscos associados a essa condição respiratória. Informações adicionais sobre a gravidade e as causas do aumento não estão disponíveis no conteúdo.",
-      "key_points": [],
+      "summary": "A Agência Brasil reporta um aumento nos casos de Síndrome Respiratória Aguda Grave (SRAG) entre crianças. A situação é preocupante e requer atenção das autoridades de saúde. Não foram fornecidos dados específicos sobre a magnitude do aumento ou as causas identificadas. A falta de informações detalhadas limita a compreensão completa do cenário atual.",
+      "key_points": [
+        "Aumento de casos de SRAG entre crianças",
+        "Preocupação das autoridades de saúde"
+      ],
       "coverage_scope": "nacional",
-      "limitations": "Conteúdo sem informações detalhadas."
+      "limitations": "Conteúdo sem dados específicos ou informações detalhadas."
     },
     {
       "title": "InfoGripe: cresce número de casos de SRAG entre crianças no Nordeste e Amazonas",
       "url": "https://agencia.fiocruz.br/infogripe-cresce-numero-de-casos-de-srag-entre-criancas-no-nordeste-e-amazonas",
       "source": "Agência Fiocruz de Notícias",
       "published_at": "2025-08-14T00:00:00",
-      "summary": "O Boletim InfoGripe da Fiocruz, divulgado em 14 de agosto de 2025, indica um aumento de casos de Síndrome Respiratória Aguda Grave (SRAG) entre crianças e adolescentes até 14 anos, especialmente na Bahia, Rio Grande do Norte, Paraíba e Amazonas. O crescimento é atribuído ao vírus sincicial respiratório (VSR) e rinovírus. Apesar da baixa notificação de casos de SRAG relacionados à Covid-19, estados como Ceará, Paraíba e Rio de Janeiro apresentam aumento nas notificações de casos graves. A atualização abrange o período de 3 a 9 de agosto e destaca a importância da vacinação contra a Covid-19. Nacionalmente, a tendência de queda nos casos de SRAG é observada, mas quatro estados estão em nível de alerta. A prevalência de vírus entre os casos positivos inclui 42,2% de VSR e 37% de rinovírus.",
+      "summary": "O Boletim InfoGripe da Fiocruz, divulgado em 14 de agosto de 2025, revela um aumento de casos de Síndrome Respiratória Aguda Grave (SRAG) entre crianças e adolescentes até 14 anos, especialmente na Bahia, Rio Grande do Norte, Paraíba e Amazonas. O crescimento é atribuído ao vírus sincicial respiratório (VSR) e rinovírus. Apesar da baixa notificação de casos de SRAG relacionados à Covid-19, estados como Ceará, Paraíba e Rio de Janeiro apresentam aumento nas notificações de casos graves. A atualização abrange o período de 3 a 9 de agosto e destaca a importância da vacinação contra a Covid-19. Nacionalmente, a tendência de queda nos casos de SRAG é observada, mas quatro estados estão em alerta. A prevalência de vírus entre os casos positivos inclui 42,2% de VSR e 37% de rinovírus.",
       "key_points": [
         "Aumento de casos de SRAG entre crianças e adolescentes até 14 anos.",
         "Causas principais: vírus sincicial respiratório (VSR) e rinovírus.",
-        "Quatro estados em nível de alerta: Amazonas, Bahia, Paraíba e Rio Grande do Norte.",
+        "Quatro estados em alerta: Amazonas, Bahia, Paraíba e Rio Grande do Norte.",
         "Vacinação contra Covid-19 é enfatizada como proteção.",
         "Tendência de queda nos casos de SRAG na maior parte do país."
       ],
       "coverage_scope": "Nacional",
-      "limitations": "O conteúdo não apresenta números específicos de casos ou óbitos."
+      "limitations": "Limitação de dados sobre a situação em outros estados e faixas etárias."
     },
     {
       "title": "Brasil está em alerta de risco para quadros graves de gripe e Covid-19 | CNN Brasil",
       "url": "https://www.cnnbrasil.com.br/nacional/brasil/brasil-esta-em-alerta-de-risco-para-quadros-graves-de-gripe-e-covid-19/",
       "source": "CNN Brasil",
       "published_at": "2025-06-05T00:00:00",
-      "summary": "O Brasil está em alerta para quadros graves de gripe e Covid-19, com 25 estados em nível de alerta, risco ou alto risco. Até agora, foram notificados 83.928 casos de Síndrome Respiratória Aguda Grave (SRAG) em 2025, com 41.455 resultados positivos para vírus respiratórios. Os principais vírus identificados incluem VSR (45%), rinovírus (22,8%) e influenza A (22,7%). A mortalidade por SRAG é semelhante entre crianças e idosos, com a influenza A sendo a principal causa de óbitos em idosos. Apesar do aumento, alguns estados mostram sinais de queda nos casos, como Mato Grosso do Sul, enquanto outros ainda apresentam altos níveis de incidência.",
+      "summary": "O Brasil está em alerta para quadros graves de gripe e Covid-19, com 25 estados em nível de alerta, risco ou alto risco. Até agora, foram notificados 83.928 casos de Síndrome Respiratória Aguda Grave (SRAG) em 2025, com 41.455 resultados positivos para vírus respiratórios. Os principais vírus identificados incluem VSR (45%), rinovírus (22,8%) e influenza A (22,7%). A mortalidade por SRAG é semelhante entre crianças e idosos, com a influenza A sendo a principal causa de óbitos entre os idosos. Apesar do aumento, alguns estados como Mato Grosso do Sul e Ceará mostram sinais de queda nos casos. A situação é crítica em várias capitais, com 15 cidades em alerta.",
       "key_points": [
         "25 estados em alerta para SRAG",
         "83.928 casos notificados em 2025",
         "45% dos casos positivos são de VSR",
-        "Influenza A é a principal causa de óbitos em idosos",
-        "Sinais de queda em Mato Grosso do Sul"
+        "Influenza A é a principal causa de óbitos entre idosos",
+        "Sinais de queda em Mato Grosso do Sul e Ceará"
       ],
-      "coverage_scope": "Nacional",
-      "limitations": null
+      "coverage_scope": "Brasil",
+      "limitations": "Dados parciais, com foco em casos notificados e não em todos os casos possíveis."
     },
     {
       "title": "Casos de SRAG em crianças crescem em quatro estados, diz Fiocruz",
       "url": "https://www.band.com.br/bandnews-fm/rio-de-janeiro/noticias/casos-de-srag-em-criancas-crescem-em-quatro-estados-diz-fiocruz-202508141510",
       "source": "Band",
       "published_at": null,
-      "summary": "A Fiocruz reportou um aumento nos casos de Síndrome Respiratória Aguda Grave (SRAG) em crianças em quatro estados do Brasil. A situação é preocupante e requer atenção das autoridades de saúde. Detalhes sobre os estados afetados e os números exatos não foram fornecidos, limitando a compreensão da magnitude do problema.",
+      "summary": "A Fiocruz reportou um aumento nos casos de Síndrome Respiratória Aguda Grave (SRAG) em crianças em quatro estados do Brasil. A situação é preocupante e requer atenção das autoridades de saúde. Detalhes sobre os estados afetados e as medidas a serem tomadas não foram fornecidos na matéria.",
       "key_points": [
         "Aumento de casos de SRAG em crianças",
         "Identificação em quatro estados brasileiros",
         "Relato feito pela Fiocruz"
       ],
-      "coverage_scope": "nacional",
-      "limitations": "Conteúdo textual não disponível, informações limitadas."
+      "coverage_scope": "Nacional",
+      "limitations": "Conteúdo textual não disponível."
     },
     {
       "title": "Paraná segue em alerta para Síndrome Respiratória Aguda Grave, mas Curitiba já respira aliviada",
       "url": "https://www.bemparana.com.br/noticias/parana/parana-segue-em-alerta-para-sindrome-respiratoria-aguda-grave-mas-curitiba-ja-respira-aliviada/",
       "source": "Bem Paraná",
       "published_at": null,
-      "summary": "O estado do Paraná permanece em alerta para a Síndrome Respiratória Aguda Grave (SRAG), enquanto a cidade de Curitiba apresenta uma situação mais tranquila, com sinais de alívio. A situação de alerta indica a necessidade de monitoramento contínuo e medidas de prevenção para evitar a propagação da doença. A diferença entre a capital e o restante do estado sugere que as condições de saúde pública podem variar significativamente em diferentes regiões. É importante que as autoridades de saúde mantenham a vigilância e informem a população sobre as melhores práticas para a proteção contra a SRAG.",
+      "summary": "O estado do Paraná permanece em alerta para a Síndrome Respiratória Aguda Grave (SRAG), enquanto a cidade de Curitiba apresenta uma situação mais tranquila, com sinais de alívio. A situação de alerta indica a necessidade de monitoramento contínuo e medidas de prevenção para evitar a propagação da doença. A diferença entre a capital e o restante do estado sugere que as condições de saúde pública podem variar significativamente dentro da mesma região, exigindo atenção diferenciada das autoridades de saúde.",
       "key_points": [
         "Paraná em alerta para SRAG",
         "Curitiba apresenta alívio na situação",
         "Necessidade de monitoramento contínuo",
-        "Diferenças regionais nas condições de saúde"
+        "Diferenças nas condições de saúde pública entre Curitiba e o restante do estado"
       ],
       "coverage_scope": "regional",
       "limitations": "Conteúdo textual não disponível."
@@ -81,18 +83,18 @@
       "url": "https://g1.globo.com/saude/noticia/2025/06/02/casos-de-sindrome-respiratoria-aguda-grave-estao-em-alta-em-mais-de-20-estados-pelo-pais.ghtml",
       "source": "G1",
       "published_at": "2025-06-02T00:00:00",
-      "summary": "Os casos de síndrome respiratória aguda grave (SRAG) estão em alta em mais de 20 estados do Brasil, com destaque para São Paulo, onde hospitais estão superlotados. A Fiocruz informa que 72,5% dos óbitos por SRAG estão relacionados à influenza A, e a vacinação contra a gripe está baixa, com apenas 38% do público-alvo vacinado em Jundiaí. No Maranhão, o número de casos aumentou de 1.303 para 1.680 em quatro dias, com 89 óbitos registrados este ano. Um hospital de campanha foi montado em São Luís para atender a demanda crescente. Em Porto Alegre, postos de saúde abriram aos domingos para vacinação e atendimento.",
+      "summary": "Os casos de síndrome respiratória aguda grave (SRAG) estão em alta em mais de 20 estados do Brasil, com destaque para São Paulo e Maranhão. A Fiocruz informa que 72,5% dos óbitos por SRAG estão relacionados à influenza A, e a vacinação contra a gripe está baixa, com apenas 38% do público-alvo vacinado em Jundiaí e menos de 30% no Maranhão. Em Jundiaí, hospitais estão operando acima da capacidade, com relatos de longas esperas por atendimento. No Maranhão, o número de casos aumentou de 1.303 para 1.680 em quatro dias, e 89 óbitos já foram registrados este ano. Um hospital de campanha foi montado em São Luís para atender a demanda crescente. Em Porto Alegre, postos de saúde abriram aos domingos para vacinar e atender pacientes com sintomas respiratórios.",
       "key_points": [
-        "Casos de SRAG em alta em mais de 20 estados.",
-        "72,5% dos óbitos por SRAG relacionados à influenza A.",
-        "Vacinação contra a gripe está baixa em várias regiões.",
-        "Superlotação em hospitais, como em Jundiaí, SP.",
-        "Maranhão registrou aumento significativo de casos e óbitos.",
-        "Hospital de campanha em São Luís para atender pacientes.",
-        "Postos de saúde em Porto Alegre abrem aos domingos para vacinação."
+        "Casos de SRAG em alta em mais de 20 estados",
+        "72,5% dos óbitos por SRAG relacionados à influenza A",
+        "Vacinação contra gripe abaixo de 30% em várias regiões",
+        "Hospitais em Jundiaí operando acima da capacidade",
+        "Maranhão registrou 89 óbitos por SRAG em 2025",
+        "Hospital de campanha em São Luís para atender aumento de casos",
+        "Postos de saúde em Porto Alegre abrem aos domingos para vacinação"
       ],
       "coverage_scope": "Nacional",
-      "limitations": "Conteúdo baseado em informações parciais e relatos de diferentes regiões."
+      "limitations": "Conteúdo baseado em informações parciais e relatos."
     },
     {
       "title": "Casos de vírus respiratório e Influenza A estão em queda no Brasil",
@@ -102,7 +104,7 @@
       "summary": "O Brasil está observando uma queda nos casos de vírus respiratório e Influenza A. Essa tendência é um indicativo positivo para a saúde pública, sugerindo uma possível diminuição na circulação desses patógenos. No entanto, detalhes adicionais sobre a magnitude da queda ou as regiões mais afetadas não estão disponíveis.",
       "key_points": [
         "Queda nos casos de vírus respiratório no Brasil.",
-        "Redução nos casos de Influenza A.",
+        "Diminuição dos casos de Influenza A.",
         "Indicação positiva para a saúde pública."
       ],
       "coverage_scope": "Nacional",
@@ -113,13 +115,13 @@
       "url": "https://agencia.fiocruz.br/infogripe-725-dos-obitos-por-srag-estao-relacionados-influenza",
       "source": "Agência Fiocruz de Notícias",
       "published_at": "2025-05-29T00:00:00",
-      "summary": "A nova edição do Boletim InfoGripe da Fiocruz revela que 72,5% dos óbitos por Síndrome Respiratória Aguda Grave (SRAG) estão associados à influenza A. A análise, referente à Semana Epidemiológica 21, mostra que a incidência de SRAG por influenza A é moderada a muito alta, especialmente em jovens, adultos e idosos. A mortalidade é mais alta entre idosos e crianças até dois anos. O Boletim também indica uma interrupção no crescimento das hospitalizações por Vírus Sincicial Respiratório (VSR) em algumas regiões. A prevalência de vírus entre os casos positivos inclui 36,5% para influenza A e 50,7% para VSR. A vacinação é enfatizada como crucial para grupos prioritários, como crianças e idosos, devido ao aumento dos casos.",
+      "summary": "A nova edição do Boletim InfoGripe da Fiocruz revela que 72,5% dos óbitos por Síndrome Respiratória Aguda Grave (SRAG) estão associados à influenza A. A análise, referente à Semana Epidemiológica 21, mostra que a incidência de SRAG por influenza A é moderada a muito alta, especialmente em jovens, adultos e idosos. A mortalidade é mais alta entre idosos e crianças de até dois anos. O Boletim também indica uma interrupção no crescimento das hospitalizações por Vírus Sincicial Respiratório (VSR) em algumas regiões. A vacinação é enfatizada como crucial para grupos prioritários, como crianças e idosos, devido ao aumento dos casos de SRAG.",
       "key_points": [
         "72,5% dos óbitos por SRAG relacionados à influenza A.",
         "Incidência de SRAG moderada a muito alta em jovens, adultos e idosos.",
-        "A mortalidade é maior entre idosos e crianças até dois anos.",
-        "Interrupção no crescimento das hospitalizações por VSR em algumas regiões.",
-        "Prevalência de 36,5% para influenza A e 50,7% para VSR entre casos positivos."
+        "A mortalidade é maior entre idosos e crianças de até dois anos.",
+        "Interrupção no crescimento das hospitalizações por VSR em algumas localidades.",
+        "Vacinação é fundamental para grupos prioritários."
       ],
       "coverage_scope": "Nacional",
       "limitations": "Dados parciais, sujeitos a alterações em atualizações futuras."
@@ -129,28 +131,28 @@
       "url": "https://agencia.fiocruz.br/infogripe-alerta-para-alta-expressiva-de-casos-de-srag",
       "source": "Agência Fiocruz de Notícias",
       "published_at": "2025-06-12T00:00:00",
-      "summary": "O Boletim InfoGripe da Fiocruz, divulgado em 12 de junho de 2025, indica um aumento significativo nos casos de Síndrome Respiratória Aguda Grave (SRAG) no Brasil, com um crescimento de 91% em comparação ao mesmo período do ano anterior. A alta se concentra nas regiões Centro-Sul, com a influenza A e o Vírus Sincicial Respiratório (VSR) sendo os principais responsáveis pelas hospitalizações. Embora alguns estados apresentem sinais de estabilização, a incidência de hospitalizações permanece alta. A vacinação contra a gripe é enfatizada como crucial para a prevenção de casos graves. Até o momento, foram notificados 93.779 casos de SRAG em 2025, com 50,5% positivos para vírus respiratórios.",
+      "summary": "O Boletim InfoGripe da Fiocruz, divulgado em 12 de junho de 2025, indica um aumento significativo nos casos de Síndrome Respiratória Aguda Grave (SRAG) no Brasil, com um crescimento de 91% em comparação ao ano anterior. A alta se concentra nas regiões Centro-Sul, com a influenza A e o Vírus Sincicial Respiratório (VSR) sendo os principais responsáveis pelas hospitalizações. Apesar de alguns estados apresentarem sinais de estabilização, a incidência de hospitalizações permanece elevada. A vacinação contra a gripe é enfatizada como crucial para a prevenção de casos graves. Até o momento, foram notificados 93.779 casos de SRAG em 2025, com 50,5% positivos para vírus respiratórios.",
       "key_points": [
-        "Aumento de 91% nos casos de SRAG em comparação ao ano anterior.",
-        "Concentração de casos nas regiões Centro-Sul do Brasil.",
+        "Aumento de 91% nos casos de SRAG em 2025 em comparação ao ano anterior.",
         "Influenza A e VSR são os principais responsáveis pelas hospitalizações.",
         "Alguns estados mostram sinais de estabilização, mas a incidência continua alta.",
-        "Vacinação contra a gripe é recomendada para prevenir casos graves."
+        "Vacinação contra a gripe é recomendada como forma de prevenção.",
+        "93.779 casos de SRAG notificados em 2025, com 50,5% positivos para vírus respiratórios."
       ],
       "coverage_scope": "Nacional",
-      "limitations": "Dados parciais, com atualizações frequentes sobre notificações e resultados laboratoriais."
+      "limitations": "O conteúdo não apresenta dados numéricos detalhados sobre hospitalizações ou óbitos."
     },
     {
       "title": "Casos de covid-19 estão em alta no Ceará e no Rio, aponta Fiocruz",
       "url": "https://agenciabrasil.ebc.com.br/saude/noticia/2025-08/casos-de-covid-19-estao-em-alta-no-ceara-e-no-rio-aponta-fiocruz",
       "source": "Agência Brasil",
       "published_at": "2025-08-07T00:00:00",
-      "summary": "O boletim semanal InfoGripe da Fiocruz indica aumento nos casos de covid-19 no Ceará e no Rio de Janeiro, além de níveis elevados de SRAG entre crianças devido ao VSR. A Bahia também reporta aumento de hospitalizações em crianças por rinovírus. Apesar disso, há uma tendência de queda nos casos de SRAG associados ao Influenza entre idosos e ao VSR em crianças até 2 anos. A pesquisadora Tatiana Portela enfatiza a importância da vacinação, especialmente para idosos e imunocomprometidos, que devem receber reforços a cada seis meses. Nos últimos quatro semanas, a prevalência de vírus respiratórios entre os casos positivos foi de 13,9% para Influenza A, 1,5% para Influenza B, 44,7% para VSR, 34,6% para rinovírus e 5,6% para Sars-CoV-2. No ano epidemiológico de 2025, foram notificados 150.615 casos de SRAG, com 53,5% positivos para vírus respiratórios.",
+      "summary": "O boletim semanal InfoGripe da Fiocruz indica aumento nos casos de covid-19 no Ceará e no Rio de Janeiro, além de níveis elevados de SRAG entre crianças devido ao VSR. A Bahia também registrou aumento nas hospitalizações de crianças e adolescentes por rinovírus. Apesar da alta, há uma tendência de queda nos casos de SRAG associados ao Influenza entre idosos e ao VSR em crianças até 2 anos. A pesquisadora Tatiana Portela enfatiza a importância da vacinação, especialmente para idosos e imunocomprometidos, que devem receber reforços a cada seis meses. Nos últimos quatro semanas, a prevalência de vírus respiratórios entre os casos positivos foi de 13,9% para Influenza A, 1,5% para Influenza B, 44,7% para VSR, 34,6% para rinovírus e 5,6% para Sars-CoV-2. No ano epidemiológico de 2025, foram notificados 150.615 casos de SRAG, com 53,5% positivos para vírus respiratórios.",
       "key_points": [
         "Aumento de casos de covid-19 no Ceará e no Rio de Janeiro.",
         "Níveis elevados de SRAG entre crianças devido ao VSR.",
-        "Aumento de hospitalizações em crianças na Bahia por rinovírus.",
-        "Tendência de queda nos casos de SRAG associados ao Influenza entre idosos.",
+        "Aumento de hospitalizações na Bahia por rinovírus.",
+        "Tendência de queda nos casos de SRAG por Influenza entre idosos.",
         "Importância da vacinação para idosos e imunocomprometidos."
       ],
       "coverage_scope": "Nacional",
@@ -158,17 +160,16 @@
     }
   ],
   "executive_summary": {
-    "overall_summary": "O cenário atual da Síndrome Respiratória Aguda Grave (SRAG) no Brasil apresenta um aumento significativo de casos, especialmente entre crianças e adolescentes, com destaque para regiões como o Nordeste e o Amazonas. O Boletim InfoGripe da Fiocruz, publicado em 14 de agosto de 2025, aponta que 72,5% dos óbitos por SRAG estão relacionados à influenza A, com uma alta expressiva de 91% nos casos em comparação ao ano anterior. Apesar de uma tendência de queda em algumas regiões, como Mato Grosso do Sul, a situação permanece crítica em 25 estados, onde a vacinação contra a gripe é considerada insuficiente, com apenas 38% do público-alvo vacinado em algumas áreas. A prevalência de vírus respiratórios, como o VSR e rinovírus, continua a ser uma preocupação, especialmente entre crianças. A necessidade de monitoramento contínuo e intervenções de saúde pública é urgente para mitigar os riscos associados a essa condição respiratória.",
+    "overall_summary": "O cenário atual da Síndrome Respiratória Aguda Grave (SRAG) no Brasil apresenta um aumento significativo nos casos, especialmente entre crianças e adolescentes, com destaque para regiões como o Nordeste e estados como Bahia, Rio Grande do Norte e Amazonas. O Boletim InfoGripe da Fiocruz, publicado em 14 de agosto de 2025, aponta que 72,5% dos óbitos por SRAG estão relacionados à influenza A, e a vacinação contra a gripe é considerada crucial, com taxas de cobertura alarmantemente baixas em várias regiões. Apesar de uma tendência de queda em alguns estados, como Mato Grosso do Sul e Ceará, a situação permanece crítica em 25 estados, com 83.928 casos notificados em 2025 até o momento. A prevalência de vírus respiratórios, como o VSR e rinovírus, é alta, e a mortalidade é mais acentuada entre idosos e crianças. A necessidade de monitoramento contínuo e medidas de prevenção é evidente, especialmente em áreas com aumento de hospitalizações e casos graves.",
     "highlights": [
-      "Aumento de casos de SRAG entre crianças e adolescentes, especialmente no Nordeste e Amazonas (Agência Fiocruz, 14/08/2025).",
+      "Aumento de casos de SRAG entre crianças e adolescentes, especialmente na Bahia, Rio Grande do Norte e Amazonas (Agência Fiocruz, 14/08/2025).",
       "72,5% dos óbitos por SRAG relacionados à influenza A (Agência Fiocruz, 29/05/2025).",
-      "91% de aumento nos casos de SRAG em comparação ao ano anterior, com concentração nas regiões Centro-Sul (Agência Fiocruz, 12/06/2025).",
-      "25 estados em alerta para SRAG, com 83.928 casos notificados em 2025 (CNN Brasil, 05/06/2025).",
-      "Vacinação contra a gripe é baixa, com apenas 38% do público-alvo vacinado em algumas regiões (G1, 02/06/2025).",
-      "Tendência de queda em alguns estados, mas alta incidência de hospitalizações permanece (Agência Fiocruz, 12/06/2025)."
+      "83.928 casos notificados de SRAG em 2025, com 25 estados em alerta (CNN Brasil, 05/06/2025).",
+      "Vacinação contra a gripe abaixo de 30% em várias regiões, contribuindo para a alta de casos (G1, 02/06/2025).",
+      "Tendência de queda em alguns estados, mas a situação é crítica em várias capitais (CNN Brasil, 05/06/2025)."
     ],
-    "consensus": "A maioria das fontes concorda que há um aumento significativo nos casos de SRAG, especialmente entre crianças, e que a vacinação é crucial para a prevenção. A influenza A é identificada como a principal causa de óbitos, e a necessidade de monitoramento contínuo é amplamente reconhecida.",
-    "disagreements": "Algumas fontes relatam uma tendência de queda em casos de SRAG, enquanto outras enfatizam o aumento contínuo, especialmente em determinadas regiões. A falta de dados específicos sobre a gravidade e a magnitude do problema em algumas reportagens limita a compreensão total da situação.",
+    "consensus": "A vacinação é amplamente reconhecida como uma medida crucial para a prevenção de casos graves de SRAG, especialmente entre grupos prioritários como crianças e idosos. Há um consenso sobre a necessidade de monitoramento contínuo e medidas de saúde pública para conter a propagação da doença.",
+    "disagreements": "Algumas fontes indicam uma tendência de queda nos casos de SRAG, enquanto outras relatam um aumento significativo, especialmente em crianças. A falta de dados específicos sobre a magnitude do aumento e as causas identificadas limita a compreensão do cenário atual.",
     "sources_covered": [
       "Agência Brasil",
       "Agência Fiocruz de Notícias",
