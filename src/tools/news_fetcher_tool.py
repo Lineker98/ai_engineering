@@ -1,9 +1,8 @@
-import os
 import httpx
 import trafilatura
 import logging
 from typing import List, Dict, Optional
-from datetime import datetime, timezone
+from datetime import datetime
 from dotenv import load_dotenv
 
 from ..utils.helper_functions import save_json_atomic
