@@ -99,6 +99,10 @@ class NewsSummaryState(TypedDict):
 # ------------ Schemas to the main orchestrator ---------------
 class OrchestratorState(TypedDict):
     """Defines the state for the main pipeline orchestrator"""
+    # inputs
+    news_query: str
+    fetcher_api_key: str
+    
     # outputs from agents
     metrics_bundle: Optional[MetricsBundle]
     news_summary_output: Optional[Dict[str, Any]]
