@@ -83,19 +83,21 @@ class OrchestratorAgent:
         logger.info("--- ORCHESTRATOR: METRICS AGENT COMPLETED ---")
         return {"metrics_bundle": bundle}
     
-    def node_ingest_news(self, state: OrchestratorState) -> Dict[str, Any]:
+    def node_ingest_news(self, state: OrchestratorState) -> OrchestratorState:
         """_summary_
 
         Args:
             state (OrchestratorState): _description_
 
         Returns:
-            Dict[str, Any]: _description_
+            OrchestratorState: _description_
         """
         logger.info("--- ORCHESTRATOR: EXECUTING NEWS INGESTION ---")
-        # This function will search, parse, and save the news to news_path
+        news_query = state['news_query']
+        fetcher_api_key = state['fetcher_api_key']
         ingest_srag_news(
-            query="SRAG site:saude.gov.br", # Or get this from the state
+            fetcher_api_key=fetcher_api_key,
+            query=news_query,
             output_path=self.news_input_path,
             top_k=10
         )
@@ -216,27 +218,29 @@ class OrchestratorAgent:
         graph = StateGraph(OrchestratorState)
 
         graph.add_node("run_metrics", self.node_run_metrics_agent)
+        graph.add_node("ingest_news", self.node_ingest_news)
         graph.add_node("run_news", self.node_run_news_agent)
         graph.add_node("final_report", self.node_create_final_report)
         graph.add_node("generate_pdf", self.node_generate_pdf)
 
         # Define the workflow
         graph.add_edge(START, "run_metrics")
-        graph.add_edge("run_metrics", "run_news")
+        graph.add_edge("run_metrics", "ingest_news")
+        graph.add_edge("ingest_news", "run_news")
         graph.add_edge("run_news", "final_report")
         graph.add_edge("final_report", "generate_pdf")
         graph.add_edge("generate_pdf", END)
 
         return graph.compile()
 
-    def run(self):
+    def run(self, news_query: str, fetcher_api_key: str):
         """Ponto de entrada principal para executar todo o pipeline de orquestração.
 
         Returns:
             dict: O estado final do pipeline após a execução completa.
         """
         app = self.build_graph()
-        final_state = app.invoke(input={})
+        final_state = app.invoke(input={"news_query": news_query, "fetcher_api_key": fetcher_api_key})
 
         logger.info("--- PIPELINE COMPLETE ---")
         return final_state
