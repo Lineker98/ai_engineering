@@ -4,12 +4,14 @@ from pathlib import Path
 from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from typing import Dict, Any
 
 from .schemas import OrchestratorState
 from .srag_metrics_agent import SRAGMetricsReport
 from .srag_news_summary_agent import SummaryAgent
 from ..report.generate_pdf import run_report
 from .prompt import FINAL_REPORT_SYSTEM, FINAL_REPORT_USER
+from ..etl.news_ingest import ingest_srag_news
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +82,24 @@ class OrchestratorAgent:
 
         logger.info("--- ORCHESTRATOR: METRICS AGENT COMPLETED ---")
         return {"metrics_bundle": bundle}
+    
+    def node_ingest_news(self, state: OrchestratorState) -> Dict[str, Any]:
+        """_summary_
+
+        Args:
+            state (OrchestratorState): _description_
+
+        Returns:
+            Dict[str, Any]: _description_
+        """
+        logger.info("--- ORCHESTRATOR: EXECUTING NEWS INGESTION ---")
+        # This function will search, parse, and save the news to news_path
+        ingest_srag_news(
+            query="SRAG site:saude.gov.br", # Or get this from the state
+            output_path=self.news_input_path,
+            top_k=10
+        )
+        return {}
 
     def node_run_news_agent(self, state: OrchestratorState) -> OrchestratorState:
         """Executa o agente de resumo de notícias para coletar e salvar dados qualitativos.
