@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from typing import Any, Dict, Optional, Callable, List
 import logging
+from pathlib import Path
 
 from langgraph.graph import StateGraph, END, START
 from langchain_openai import ChatOpenAI
@@ -21,7 +22,8 @@ from .prompt import SUMMARY_METRIC_SYSTEM, SUMMARY_METRIC_USER
 from ..utils.helper_functions import save_json_atomic
 from ..utils.plots import plot_static_metrics
 from ..utils.logs_config import setup_logging
-from pathlib import Path
+from ..tools.db_tools import DatabaseQueryTool
+
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -40,6 +42,7 @@ class SRAGMetricsReport:
         self.sqlite_path = sqlite_path
         self.llm = ChatOpenAI(model=model, temperature=temperature)
         self.chain = self._build_summary_chain()
+        self.db_tool = DatabaseQueryTool(sqlite_path=sqlite_path)
 
     def _build_summary_chain(self):
         """Constructs and returns a LangChain processing chain for metric summaries.
@@ -56,34 +59,6 @@ class SRAGMetricsReport:
         )
         return prompt | self.llm
 
-    def _query_rows(
-        self, sql: str, params: Optional[Dict[str, Any]] = {}
-    ) -> List[Dict]:
-        """Executes a SQL query and returns the results as a list of dictionaries.
-
-        This helper method connects to a SQLite database, runs a parameterized SQL query, and fetches all the results.
-        It then maps the column names to each row's values, returning the data in a user-friendly list of dictionaries.
-        The database connection is always closed after the operation.
-
-        Args:
-            sql (str): The SQL query string to be executed.
-            params (Optional[Dict[str, Any]], optional): A dictionary of parameters for the query to prevent SQL injection. Defaults to {}.
-
-        Returns:
-            List[Dict]: A list of dictionaries, where each dictionary represents a row from the query result.
-        """
-        conn = sqlite3.connect(self.sqlite_path)
-        try:
-            cur = conn.cursor()
-            cur.execute(sql, params)
-            cols = [d[0] for d in cur.description] if cur.description else []
-            rows = cur.fetchall()
-            return [dict(zip(cols, r)) for r in rows]
-        except Exception as e:
-            logger.error(f"Error executing query: {e}")
-        finally:
-            conn.close()
-
     def node_case_growth(self, state: ReportAgentState) -> ReportAgentState:
         """Extracts and stores the SRAG case growth metric in the pipeline state.
 
@@ -99,7 +74,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state, with a new key 'case_growth' containing the time series data.
         """
         logger.info("Query and analyze results for cases growth.")
-        rows = self._query_rows(SQL_CASE_GROWTH)
+        rows = self.db_tool.query_rows(sql=SQL_CASE_GROWTH)
         description = "Taxa de aumento de casos de SRAG - Grão mensal"
         name = "case_growth"
         ia_summary = self.chain.invoke(
@@ -131,7 +106,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state, with a new key 'mortality_rate' containing the time series data.
         """
         logger.info("Query and analyze results for mortality rate.")
-        rows = self._query_rows(SQL_MORTALITY)
+        rows = self.db_tool.query_rows(sql=SQL_MORTALITY)
         description = "Taxa de mortalidade de SRAG - Grão mensal"
         name = "mortality_rate"
         ia_summary = self.chain.invoke(
@@ -162,7 +137,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state, with a new key 'uti_utilization_rate' containing the time series data.
         """
         logger.info("Query and analyze results for UTI utilization.")
-        rows = self._query_rows(SQL_UTI)
+        rows = self.db_tool.query_rows(sql=SQL_UTI)
         description = "Taxa de ocupação de UTI - Grão mensal"
         name = "uti_utilization_rate"
         ia_summary = self.chain.invoke(
@@ -194,7 +169,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state, with a new key 'vaccination_rate' containing the time series data.
         """
         logger.info("Query and analyze results for Vacciation rate.")
-        rows = self._query_rows(SQL_VACCINATION)
+        rows = self.db_tool.query_rows(sql=SQL_VACCINATION)
         description = "Taxa de vacinação contra COVID-19 - Grão mensal"
         name = "vaccination_rate"
         ia_summary = self.chain.invoke(
@@ -221,7 +196,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state of the agent, with the `daily_cases` metric added to the results.
         """
         logger.info("Query and analyze results for Daily cases for the last 30 days.")
-        rows = self._query_rows(SQL_CASOS_DIARIOS_30_DIAS)
+        rows = self.db_tool.query_rows(sql=SQL_CASOS_DIARIOS_30_DIAS)
         description = "Casos diários de SRAG nos últimos 30 Dias"
         name = "daily_cases"
         ia_summary = self.chain.invoke(
@@ -253,7 +228,7 @@ class SRAGMetricsReport:
             ReportAgentState: The updated state of the agent, with the `monthly_cases` metric added to the results.
         """
         logger.info("Query and analyze results for Monthlt cases for the last 12 months.")
-        rows = self._query_rows(SQL_CASOS_MENSAIS_12_MESES)
+        rows = self.db_tool.query_rows(sql=SQL_CASOS_MENSAIS_12_MESES)
         description = "Casos mensais de SRAG nos últimos 12 meses"
         name = "monthly_cases"
         ia_summary = self.chain.invoke(
@@ -316,7 +291,7 @@ class SRAGMetricsReport:
         payload = {
             "meta": {
                 "generated_at": datetime.now(timezone.utc).isoformat(),
-                "sqlite_path": self.sqlite_path,
+                "sqlite_path": self.db_tool.sqlite_path,
             },
             "metrics": bundle.model_dump(),
         }
