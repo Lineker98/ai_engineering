@@ -176,7 +176,7 @@ class OrchestratorAgent:
 
         # Save the final report to a file
         output_dir = Path(self.output_dir)
-        report_path = output_dir / "final_executive_report.md"
+        report_path = output_dir / "summary_report.md"
 
         report_path.write_text(final_report, encoding="utf-8")
         logger.info(f"Final report saved to {report_path}")
@@ -197,7 +197,7 @@ class OrchestratorAgent:
         """
         logger.info("--- ORQUESTRADOR: GERANDO RELATÓRIO EM PDF ---")
         try:
-            output_path = f"{self.output_dir}/relatorio_epidemiologico_srag.pdf"
+            output_path = f"{self.output_dir}/detailed_report.pdf"
 
             run_report(output_path=output_path)
             logger.info(f"Relatório em PDF gerado com sucesso em: {output_path}")

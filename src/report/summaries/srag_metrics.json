@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2025-08-18T14:06:07.306005+00:00",
+    "generated_at": "2025-08-18T19:29:27.668297+00:00",
     "sqlite_path": "data/marts/srag.sqlite"
   },
   "metrics": {
@@ -88,7 +88,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         count(*) as casos\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos,\n  lag(casos) over (order by date_month) as casos_prev,\n  round(100.0 * (casos - lag(casos) over (order by date_month))\n        / nullif(lag(casos) over (order by date_month), 0), 2) as taxa_aumento_pct\nfrom agg\nwhere date_month >= strftime('%Y-%m', date('now', '-12 months'))\norder by date_month;",
       "description": "Taxa de aumento de casos de SRAG - Grão mensal",
-      "ia_summary": "A taxa de aumento de casos de SRAG apresentou uma tendência de queda significativa entre agosto de 2024 e agosto de 2025, com um pico de 73,95% em maio de 2025, seguido por uma drástica redução de 99,8% em agosto de 2025. Essa variação indica flutuações acentuadas na incidência da síndrome, com um aumento inicial seguido por uma queda abrupta nos meses subsequentes."
+      "ia_summary": "A taxa de aumento de casos de SRAG apresentou uma tendência de queda significativa entre agosto de 2024 e agosto de 2025, com um pico de 73,95% em maio de 2025, seguido por uma drástica redução de 99,8% em agosto de 2025. Essa variação indica flutuações consideráveis na incidência da síndrome, com um aumento acentuado seguido por uma queda abrupta nos meses subsequentes."
     },
     "mortality_rate": {
       "name": "mortality_rate",
@@ -187,7 +187,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         sum(case when EVOLUCAO in (1,2,3) then 1 else 0 end) as casos_validos,\n         sum(case when EVOLUCAO = 2 then 1 else 0 end) as obitos_srag,\n         sum(case when EVOLUCAO in (2,3) then 1 else 0 end) as obitos_totais\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos_validos,\n  obitos_srag,\n  round(100.0 * obitos_srag / nullif(casos_validos, 0), 2) as taxa_mortalidade_pct,\n  round(100.0 * obitos_totais / nullif(casos_validos, 0), 2) as taxa_mortalidade_incl_outras_pct\nfrom agg\nwhere date_month >= strftime('%Y-%m', date('now', '-12 months'))\norder by date_month;",
       "description": "Taxa de mortalidade de SRAG - Grão mensal",
-      "ia_summary": "A taxa de mortalidade por SRAG apresentou variações mensais entre agosto de 2024 e julho de 2025, com um pico de 11,93% em janeiro de 2025 e uma queda para 6,17% em abril de 2025. Em agosto de 2025, não foram registrados casos ou óbitos, resultando em dados ausentes para esse mês. A taxa de mortalidade incluindo outras causas também seguiu um padrão semelhante, refletindo a gravidade da situação ao longo do período."
+      "ia_summary": "A taxa de mortalidade por SRAG apresentou variações mensais, com um pico de 11,93% em janeiro de 2025 e uma queda para 6,17% em abril do mesmo ano. Em agosto de 2025, não foram registrados casos ou óbitos, indicando uma possível interrupção na coleta de dados ou controle da doença. A taxa de mortalidade incluindo outras causas também seguiu um padrão semelhante, refletindo a gravidade da situação ao longo dos meses."
     },
     "uti_utilization_rate": {
       "name": "uti_utilization_rate",
@@ -273,7 +273,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         sum(case when UTI in (1, 2) then 1 else 0 end) as casos_com_info_uti,\n         sum(case when UTI = 1 then 1 else 0 end) as uti_sim\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos_com_info_uti,\n  uti_sim,\n  round(100.0 * uti_sim / nullif(casos_com_info_uti, 0), 2) as taxa_ocupacao_uti_pct\nfrom agg\nwhere date_month >= strftime('%Y-%m', date('now', '-12 months'))\norder by date_month;",
       "description": "Taxa de ocupação de UTI - Grão mensal",
-      "ia_summary": "A taxa de ocupação de UTI apresentou uma tendência de queda ao longo dos meses, com um pico em janeiro de 2025 (34,83%) e uma redução significativa em agosto de 2025, quando atingiu 15,15%. O número de casos com informações sobre UTI também variou, com um aumento acentuado em maio de 2025, alcançando 48.734 casos."
+      "ia_summary": "A taxa de ocupação de UTI apresentou uma tendência de queda ao longo dos meses, com um pico em janeiro de 2025 (34,83%) e uma redução significativa em agosto de 2025, onde a ocupação foi de apenas 15,15%. O número de casos com informações sobre UTI também variou, com um aumento acentuado em maio de 2025, atingindo 48.734 casos."
     },
     "vaccination_rate": {
       "name": "vaccination_rate",
@@ -359,7 +359,7 @@
       ],
       "sql_used": "with agg as (\n  select strftime('%Y-%m', date(DT_SIN_PRI)) as date_month,\n         sum(case when VACINA_COV in (1,2) then 1 else 0 end) as casos_com_info_vac,\n         sum(case when VACINA_COV = 1 then 1 else 0 end) as vacinados\n  from srag_data\n  where DT_SIN_PRI is not null\n  group by date_month\n)\nselect\n  date_month,\n  casos_com_info_vac,\n  vacinados,\n  round(100.0 * vacinados / nullif(casos_com_info_vac, 0), 2) as taxa_vacinacao_casos_pct\nfrom agg\nwhere date_month >= strftime('%Y-%m', date('now', '-12 months'))\norder by date_month;",
       "description": "Taxa de vacinação contra COVID-19 - Grão mensal",
-      "ia_summary": "A taxa de vacinação contra COVID-19 apresentou variações significativas entre agosto de 2024 e agosto de 2025. Inicialmente, a taxa se manteve acima de 50%, atingindo um pico de 92,99% em janeiro de 2025, mas depois caiu para 46,51% em julho de 2025, antes de subir novamente para 57,14% em agosto. Isso indica flutuações na cobertura vacinal em relação aos casos reportados."
+      "ia_summary": "A taxa de vacinação contra COVID-19 apresentou variações significativas entre agosto de 2024 e agosto de 2025. Inicialmente, a taxa ficou em torno de 53-54%, mas observou-se um aumento acentuado em janeiro e fevereiro de 2025, alcançando picos de quase 93%. No entanto, a partir de junho de 2025, a taxa caiu novamente, com valores abaixo de 50% em julho, antes de uma leve recuperação em agosto."
     },
     "daily_cases": {
       "name": "daily_cases",
@@ -487,7 +487,7 @@
       ],
       "sql_used": "with \n  base_data as (\n    select date(dt_sin_pri) as data_sintoma\n    from srag_data\n    where dt_sin_pri is not null\n  ),\n  ultima_data as (\n    select max(data_sintoma) as data_maxima\n    from base_data\n  ),\n  ultimos_30_dias as (\n    select data_sintoma\n    from base_data, ultima_data\n    where data_sintoma between date(data_maxima, '-29 days') and data_maxima\n)\nselect\n    data_sintoma as data, \n    count(*) as casos_diarios\nfrom ultimos_30_dias\ngroup by data_sintoma\norder by data_sintoma",
       "description": "Casos diários de SRAG nos últimos 30 Dias",
-      "ia_summary": "Nos últimos 30 dias, houve uma tendência de queda nos casos diários de SRAG, com um pico de 1286 casos em 10 de julho, seguido por uma redução significativa, culminando em apenas 3 casos em 3 de agosto. Essa diminuição acentuada sugere uma possível melhora na situação epidemiológica."
+      "ia_summary": "Nos últimos 30 dias, houve uma tendência de queda nos casos diários de SRAG, com um pico de 1286 casos em 10 de julho, seguido por uma diminuição acentuada, culminando em apenas 3 casos em 3 de agosto. Essa redução significativa pode indicar uma melhora na situação epidemiológica."
     },
     "monthly_cases": {
       "name": "monthly_cases",

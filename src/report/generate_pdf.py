@@ -389,7 +389,7 @@ def generate_executive_report(
     # Resumo Final
     story = add_final_summary(
         story=story,
-        text_h1="Visão integrada atual",
+        text_h1="Contexto das notícias relevantes",
         h1_style=h1_style,
         content=[overall_summary, disagreements, consensus],
         content_style=body_style,
