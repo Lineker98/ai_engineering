@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # URLs for the datasets
 URLS = [
     "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-18-08-2025.csv",
-    "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-26-06-2025.csv"
+    "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-26-06-2025.csv",
 ]
 
 COLUMNS_TO_KEEP = [
@@ -24,22 +24,23 @@ COLUMNS_TO_KEEP = [
     "CLASSI_FIN",
 ]
 
-DATE_COLUMNS = ['DT_SIN_PRI']
+DATE_COLUMNS = ["DT_SIN_PRI"]
 
 # SQLite Database configuration
 DB_NAME = "data/marts/srag.sqlite"
 TABLE_NAME = "srag_data"
 
+
 async def fetch_csv(session, url):
     """
     Asynchronously fetches a CSV file from a URL and returns a pandas DataFrame.
-    
+
     Args:
         session (aiohttp.ClientSession): The client session for making HTTP requests.
         url (str): The URL of the CSV file.
-        
+
     Returns:
-        pd.DataFrame: A DataFrame containing the data from the CSV file, 
+        pd.DataFrame: A DataFrame containing the data from the CSV file,
                       or an empty DataFrame if an error occurs.
     """
     logging.info(f"Starting download from: {url}")
@@ -49,11 +50,11 @@ async def fetch_csv(session, url):
             content = await response.read()
             # Use io.BytesIO to read the content in memory
             df = pd.read_csv(
-                io.BytesIO(content), 
-                sep=';', 
-                encoding='ISO-8859-1',
+                io.BytesIO(content),
+                sep=";",
+                encoding="ISO-8859-1",
                 usecols=lambda c: c in COLUMNS_TO_KEEP,
-                low_memory=False
+                low_memory=False,
             )
             logging.info(f"Finished download from: {url}")
             return df
@@ -63,7 +64,7 @@ async def fetch_csv(session, url):
     except Exception as e:
         logging.error(f"An error occurred while processing {url}: {e}")
         return pd.DataFrame()
-    
+
 
 async def ingest_srag_data():
     """
@@ -71,32 +72,33 @@ async def ingest_srag_data():
     """
     # Checar se a base de dados existe
     if os.path.exists(DB_NAME):
-        logging.info(f"Database '{DB_NAME}' already exists. Skipping download and processing.")
+        logging.info(
+            f"Database '{DB_NAME}' already exists. Skipping download and processing."
+        )
         return
 
     async with aiohttp.ClientSession() as session:
         # Obtenção concorrente de dados
         tasks = [fetch_csv(session, url) for url in URLS]
         dataframes = await asyncio.gather(*tasks)
-    
+
     valid_dataframes = [df for df in dataframes if not df.empty]
     if not valid_dataframes:
         logging.warning("No data was downloaded. Exiting.")
         return
-        
+
     combined_df = pd.concat(valid_dataframes, ignore_index=True)
 
     for col in DATE_COLUMNS:
         if col in combined_df.columns:
-            combined_df[col] = pd.to_datetime(combined_df[col], errors='coerce')
+            combined_df[col] = pd.to_datetime(combined_df[col], errors="coerce")
         else:
             logging.warning(f"Date column '{col}' not found in the combined dataframe.")
 
-    # --- Database Storage ---
     logging.info(f"Storing data into SQLite database: {DB_NAME}")
     try:
-        engine = create_engine(f'sqlite:///{DB_NAME}')
-        combined_df.to_sql(TABLE_NAME, engine, if_exists='replace', index=False)
+        engine = create_engine(f"sqlite:///{DB_NAME}")
+        combined_df.to_sql(TABLE_NAME, engine, if_exists="replace", index=False)
         logging.info("Data successfully stored in the database.")
         logging.info(f"Total rows processed: {len(combined_df)}")
     except Exception as e:

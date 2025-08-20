@@ -4,7 +4,8 @@ from pathlib import Path
 from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from typing import Dict, Any
+import asyncio
+import sys
 
 from .schemas import OrchestratorState
 from .srag_metrics_agent import SRAGMetricsReport
@@ -12,6 +13,8 @@ from .srag_news_summary_agent import SummaryAgent
 from ..report.generate_pdf import run_report
 from .prompt import FINAL_REPORT_SYSTEM, FINAL_REPORT_USER
 from ..etl.news_ingest import ingest_srag_news
+from ..etl.load_data import ingest_srag_data
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +58,20 @@ class OrchestratorAgent:
             [("system", FINAL_REPORT_SYSTEM), ("user", FINAL_REPORT_USER)]
         )
         return prompt | self.llm
+    
+    def node_run_etl(self, state: OrchestratorState) -> OrchestratorState:
+        """
+        Executes the standalone ETL script to download SRAG data and create the SQLite database.
+        This node ensures the data is available before the metrics agent runs.
+        """
+        logger.info("--- ORCHESTRATOR: EXECUTING ETL SCRIPT NODE ---")
+        try:
+            asyncio.run(ingest_srag_data())
+            logger.info("--- ORCHESTRATOR: ETL SCRIPT COMPLETED ---")
+        except Exception as e:
+            logger.error(f"An error occurred during ETL execution: {e}")
+            sys.exit()
+        return {}
 
     def node_run_metrics_agent(self, state: OrchestratorState) -> OrchestratorState:
         """Executa o agente de métricas de SRAG para coletar e salvar dados quantitativos.
@@ -216,7 +233,8 @@ class OrchestratorAgent:
             StateGraph: A aplicação LangGraph compilada e pronta para ser executada.
         """
         graph = StateGraph(OrchestratorState)
-
+        
+        graph.add_node("run_etl", self.node_run_etl)
         graph.add_node("run_metrics", self.node_run_metrics_agent)
         graph.add_node("ingest_news", self.node_ingest_news)
         graph.add_node("run_news", self.node_run_news_agent)
@@ -224,7 +242,8 @@ class OrchestratorAgent:
         graph.add_node("generate_pdf", self.node_generate_pdf)
 
         # Define the workflow
-        graph.add_edge(START, "run_metrics")
+        graph.add_edge(START, "run_etl")
+        graph.add_edge("run_etl", "run_metrics")
         graph.add_edge("run_metrics", "ingest_news")
         graph.add_edge("ingest_news", "run_news")
         graph.add_edge("run_news", "final_report")
