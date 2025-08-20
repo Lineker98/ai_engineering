@@ -1,34 +1,37 @@
-# Relatório Executivo sobre a Situação da Síndrome Respiratória Aguda Grave (SRAG)
+# Relatório Executivo sobre a Situação da Síndrome Respiratória Aguda Grave (SRAG) no Brasil
 
 ## Visão Geral
-O Boletim InfoGripe da Fiocruz, atualizado em agosto de 2025, revela um aumento significativo nos casos de Síndrome Respiratória Aguda Grave (SRAG), especialmente entre crianças e adolescentes nas regiões Nordeste e Amazonas. Desde o início do ano, foram notificados 155.412 casos, com 53,4% positivos para vírus respiratórios, destacando o Vírus Sincicial Respiratório (VSR) e o rinovírus como principais responsáveis. Apesar da queda geral nos casos de SRAG em nível nacional, quatro estados estão em alerta, e a vacinação contra a Covid-19 e a gripe é enfatizada como crucial para a proteção, especialmente entre grupos vulneráveis.
+O cenário atual da Síndrome Respiratória Aguda Grave (SRAG) no Brasil apresenta um aumento significativo de casos, especialmente entre crianças e adolescentes até 14 anos. O Boletim InfoGripe da Fiocruz, atualizado em 14 de agosto de 2025, reporta que, desde o início do ano, foram notificados mais de 155 mil casos de SRAG, com 53,4% positivos para vírus respiratórios, sendo o vírus sincicial respiratório (VSR) e o rinovírus os principais responsáveis pelo aumento. Apesar da queda geral nos casos de SRAG em nível nacional, quatro estados estão em alerta, e a mortalidade por SRAG é alta, especialmente entre crianças e idosos. A vacinação contra a gripe e Covid-19 é enfatizada como crucial para a proteção, mas a adesão tem sido baixa, com apenas 37,77% de cobertura vacinal entre grupos prioritários.
 
 ## Métricas Principais
 
-### 1. Crescimento de Casos de SRAG
-- **Pico de Casos**: O número de casos mensais de SRAG atingiu um pico de 56.253 em maio de 2025, seguido por uma queda acentuada, com apenas 6.904 casos registrados em agosto de 2025.
-- **Tendência**: A taxa de aumento de casos apresentou uma queda significativa, com uma redução de 77,26% em agosto de 2025 em comparação ao mês anterior.
+### Casos de SRAG
+- **Crescimento de Casos**: Os casos mensais de SRAG apresentaram um pico em maio de 2025, com 56.253 casos, seguido por uma queda acentuada, culminando em agosto de 2025 com apenas 6.904 casos, representando uma redução de 77,26% em relação ao mês anterior.
+- **Casos Diários**: Nos últimos 30 dias, houve uma tendência de queda nos casos diários de SRAG, começando com 1.163 casos em 20 de julho e diminuindo para apenas 1 caso em 18 de agosto.
 
-### 2. Taxa de Mortalidade
-- **Taxa Geral**: A taxa de mortalidade por SRAG variou, com um pico de 11,89% em janeiro de 2025, e uma redução para 6,83% em julho de 2025.
-- **Causas de Óbitos**: 72,5% dos óbitos por SRAG estão relacionados à influenza A, com a mortalidade sendo mais alta entre crianças e idosos.
+### Taxa de Mortalidade
+- A taxa de mortalidade por SRAG variou entre 6,18% e 11,89% ao longo do período analisado, com um pico em janeiro de 2025. A mortalidade incluindo outras causas também flutuou, atingindo 16,58% em janeiro.
 
-### 3. Taxa de Ocupação de UTI
-- **Pico de Ocupação**: A taxa de ocupação de UTI atingiu 34,8% em janeiro de 2025, mas apresentou uma tendência de queda, alcançando 28,69% em agosto de 2025.
+### Taxa de Ocupação de UTI
+- A taxa de ocupação de UTI apresentou variações mensais, com um pico em janeiro de 2025, alcançando 34,8%, enquanto em maio de 2025 a taxa foi a mais baixa, com 27,71%.
 
-### 4. Taxa de Vacinação
-- **Vacinados**: A taxa de vacinação contra Covid-19 apresentou um aumento significativo, alcançando 92,75% em janeiro de 2025, mas caiu para 46,39% em agosto de 2025, mesmo com o aumento no número de casos.
+### Taxa de Vacinação
+- A taxa de vacinação contra COVID-19 apresentou variações significativas, com picos de 92,75% em janeiro de 2025, mas uma queda para 46,39% em agosto de 2025.
 
 ## Contexto das Notícias Relevantes
-Recentes relatórios indicam um aumento alarmante nos casos de SRAG entre crianças e adolescentes, especialmente nas regiões da Bahia, Rio Grande do Norte e Paraíba. O crescimento é atribuído principalmente ao VSR e rinovírus, com a vacinação sendo enfatizada como uma medida preventiva essencial. Apesar da queda geral nos casos de SRAG em nível nacional, estados como Ceará e Rio de Janeiro estão enfrentando um aumento nas notificações de casos graves.
+Recentes relatórios indicam um aumento alarmante nos casos de SRAG entre crianças e adolescentes, especialmente nas regiões Nordeste e Amazonas. O crescimento é atribuído ao VSR e rinovírus, com estados como Bahia, Rio Grande do Norte e Paraíba em destaque. Apesar da baixa notificação de casos relacionados à COVID-19, a mortalidade por SRAG continua alta, com 72,5% dos óbitos relacionados à influenza A. A vacinação é enfatizada como uma medida crucial, mas a adesão permanece baixa, o que pode agravar a situação.
 
-### Principais Notícias:
-- **Aumento de Casos em Crianças**: O Boletim InfoGripe destaca um aumento de casos de SRAG entre crianças, com 155.412 casos notificados em 2025, 53,4% positivos para vírus respiratórios.
-- **Quatro Estados em Alerta**: Amazonas, Bahia, Paraíba e Rio Grande do Norte estão em nível de alerta devido ao aumento de casos.
-- **Recomendações de Saúde**: Especialistas recomendam o uso de máscaras e isolamento em caso de sintomas, além da vacinação contra Covid-19 e gripe.
+### Principais Notícias
+1. **Aumento de Casos em Crianças**: O Boletim InfoGripe da Fiocruz reporta um aumento de casos de SRAG entre crianças, com 155.412 casos notificados em 2025.
+2. **Alerta em Estados**: 25 estados estão em nível de alerta para SRAG, com 83.928 casos notificados até junho.
+3. **Vacinação Crítica**: A cobertura vacinal é alarmantemente baixa, com apenas 37,77% entre grupos prioritários, o que pode contribuir para a alta mortalidade.
 
 ## Implicações
-A situação atual da SRAG exige um monitoramento contínuo e ações de saúde pública direcionadas, especialmente para as populações mais afetadas, como crianças e idosos. A queda na taxa de vacinação e o aumento de casos em algumas regiões indicam a necessidade de campanhas de conscientização e reforço na adesão à vacinação. A combinação de dados epidemiológicos e informações de saúde pública é crucial para mitigar o impacto da SRAG e proteger as populações vulneráveis.
+A situação atual da SRAG no Brasil requer atenção imediata das autoridades de saúde pública. A combinação de aumento de casos, baixa adesão à vacinação e a alta taxa de mortalidade, especialmente entre crianças e idosos, indica a necessidade de campanhas de conscientização e vacinação mais eficazes. A vigilância epidemiológica deve ser intensificada, especialmente em estados em alerta, para mitigar o impacto da SRAG e proteger as populações vulneráveis.
 
-### Conclusão
-O aumento dos casos de SRAG, especialmente entre crianças, e a variação nas taxas de mortalidade e ocupação de UTI, destacam a necessidade de uma resposta coordenada e eficaz das autoridades de saúde. A vacinação continua sendo uma ferramenta vital na prevenção de casos graves e na proteção da saúde pública.
+### Recomendações
+- **Aumentar a Cobertura Vacinal**: Implementar campanhas de vacinação mais agressivas e acessíveis, especialmente para grupos prioritários.
+- **Monitoramento Contínuo**: Fortalecer a vigilância epidemiológica para identificar e responder rapidamente a surtos em regiões afetadas.
+- **Educação e Conscientização**: Promover a conscientização sobre a importância da vacinação e medidas de prevenção, especialmente entre pais e cuidadores de crianças.
+
+Este relatório destaca a necessidade urgente de ações coordenadas para enfrentar a crescente ameaça da SRAG no Brasil.
