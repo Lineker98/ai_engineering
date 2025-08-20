@@ -421,7 +421,7 @@ def run_report(output_path: str):
     """
     base_dir = Path("src/report")
     summaries_path = base_dir / "summaries" / "news_summaries.json"
-    metrics_path = base_dir / "metrics" / "static_metrics.json"
+    metrics_path = base_dir / "summaries" / "srag_metrics.json"
 
     executive_summary = load_json(json_path=summaries_path)
     executive_summary = executive_summary.get("executive_summary", {})
