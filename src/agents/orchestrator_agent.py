@@ -61,8 +61,11 @@ class OrchestratorAgent:
     
     def node_run_etl(self, state: OrchestratorState) -> OrchestratorState:
         """
-        Executes the standalone ETL script to download SRAG data and create the SQLite database.
-        This node ensures the data is available before the metrics agent runs.
+        Executa o script de carragamento dos dados de SRAG e criaação de 
+        uma base de dados SQLite
+
+        Args:
+            state (OrchestratorState): O estado atual do pipeline
         """
         logger.info("--- ORCHESTRATOR: EXECUTING ETL SCRIPT NODE ---")
         try:
