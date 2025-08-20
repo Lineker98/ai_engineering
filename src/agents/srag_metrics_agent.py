@@ -29,7 +29,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-class SRAGMetricsReport:
+class SRAGMetricsAgent:
     """
     Orquestrador para cálculo de métricas de SRAG (Síndrome Respiratória Aguda Grave) sem uso de IA.
 

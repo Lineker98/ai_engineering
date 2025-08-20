@@ -8,7 +8,7 @@ import asyncio
 import sys
 
 from .schemas import OrchestratorState
-from .srag_metrics_agent import SRAGMetricsReport
+from .srag_metrics_agent import SRAGMetricsAgent
 from .srag_news_summary_agent import SummaryAgent
 from ..report.generate_pdf import run_report
 from .prompt import FINAL_REPORT_SYSTEM, FINAL_REPORT_USER
@@ -79,7 +79,7 @@ class OrchestratorAgent:
     def node_run_metrics_agent(self, state: OrchestratorState) -> OrchestratorState:
         """Executa o agente de métricas de SRAG para coletar e salvar dados quantitativos.
 
-        Este nó do grafo aciona o `SRAGMetricsReport`, que consulta o banco de dados,
+        Este nó do grafo aciona o `SRAGMetricsAgent`, que consulta o banco de dados,
         gera as métricas, salva os resultados em um arquivo JSON e cria gráficos visuais.
 
         Args:
@@ -90,7 +90,7 @@ class OrchestratorAgent:
         """
         logger.info("--- ORCHESTRATOR: EXECUTING METRICS AGENT ---")
 
-        metrics_agent = SRAGMetricsReport(sqlite_path=self.sqlite_path)
+        metrics_agent = SRAGMetricsAgent(sqlite_path=self.sqlite_path)
 
         # We want to save plots and JSON in a subdirectory
         metrics_output_path = f"{self.output_dir}/summaries/srag_metrics.json"
