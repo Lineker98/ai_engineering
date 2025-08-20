@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 import io
 import os
 import logging
+from pathlib import Path
 from ..utils.logs_config import setup_logging
 
 setup_logging()
@@ -96,6 +97,8 @@ async def ingest_srag_data():
             logging.warning(f"Date column '{col}' not found in the combined dataframe.")
 
     logging.info(f"Storing data into SQLite database: {DB_NAME}")
+    parent_dir = Path(DB_NAME).parent
+    parent_dir.mkdir(parents=True, exist_ok=True)
     try:
         engine = create_engine(f"sqlite:///{DB_NAME}")
         combined_df.to_sql(TABLE_NAME, engine, if_exists="replace", index=False)
