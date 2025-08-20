@@ -263,6 +263,9 @@ class OrchestratorAgent:
         """
         app = self.build_graph()
         final_state = app.invoke(input={"news_query": news_query, "fetcher_api_key": fetcher_api_key})
-
+        
+        graph_image = app.get_graph(xray=True).draw_mermaid_png()
+        with open("diagrams/OrchestratorAgent.png", "wb") as f:
+            f.write(graph_image)
         logger.info("--- PIPELINE COMPLETE ---")
         return final_state

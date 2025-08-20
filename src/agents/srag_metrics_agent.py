@@ -347,7 +347,7 @@ class SRAGMetricsReport:
         graph = StateGraph(ReportAgentState)
         graph.add_node("metrics_case_growth", self.node_case_growth)
         graph.add_node("metrics_mortality", self.node_mortality)
-        graph.add_node("metrics_UTI", self.node_uti)
+        graph.add_node("metrics_uti", self.node_uti)
         graph.add_node("metrics_vaccination", self.node_vaccination)
         graph.add_node("daily_cases", self.node_casos_diarios)
         graph.add_node("monthly_cases", self.node_casos_mensais)
@@ -356,8 +356,8 @@ class SRAGMetricsReport:
 
         graph.add_edge(START, "metrics_case_growth")
         graph.add_edge("metrics_case_growth", "metrics_mortality")
-        graph.add_edge("metrics_mortality", "metrics_UTI")
-        graph.add_edge("metrics_UTI", "metrics_vaccination")
+        graph.add_edge("metrics_mortality", "metrics_uti")
+        graph.add_edge("metrics_uti", "metrics_vaccination")
         graph.add_edge("metrics_vaccination", "daily_cases")
         graph.add_edge("daily_cases", "monthly_cases")
         graph.add_edge("monthly_cases", "aggregate_final")
@@ -406,6 +406,9 @@ class SRAGMetricsReport:
         }
         logger.info("EXECUTING STATIC METRICS AGENT")
         output = app.invoke(init_state)
+        graph_image = app.get_graph(xray=True).draw_mermaid_png()
+        with open("diagrams/SRAGMetricsReport.png", "wb") as f:
+            f.write(graph_image)
         logger.info(f"Succesfull generate all necessary metrics!")
         bundle = output["bundle"]
         return bundle

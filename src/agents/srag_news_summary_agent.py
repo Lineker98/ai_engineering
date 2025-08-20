@@ -412,6 +412,9 @@ class SummaryAgent:
             "errors": [],
         }
         out = app.invoke(init)
+        graph_image = app.get_graph(xray=True).draw_mermaid_png()
+        with open("diagrams/SummaryAgent.png", "wb") as f:
+            f.write(graph_image)
         return {
             "summaries": out.get("summaries", []),
             "executive_summary": out.get("executive_summary"),
