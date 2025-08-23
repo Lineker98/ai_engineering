@@ -5,6 +5,8 @@ from pathlib import Path
 import pandas as pd
 from datetime import datetime, timezone, date
 from typing import Any, Dict, Optional
+import markdown
+from weasyprint import HTML, CSS
 
 
 def _json_default(o: Any):
@@ -143,3 +145,33 @@ def extrair_ia_summary(json_path: str) -> Dict[str, str]:
     }
 
     return summaries
+
+def markdown_to_pdf(md_path: str, pdf_path: str) -> None:
+    """
+    Function to convert markdown file into PDF.
+
+    Args:
+        md_path (str): The file path to the markdown file to be processed.
+        pdf_parh (str): The file path where the pdf will be saved.
+
+    Returns: None
+    """
+
+    md_text = Path(md_path).read_text(encoding="utf-8")
+    
+    # Convert to HTML
+    html_text = markdown.markdown(md_text, extensions=["fenced_code", "tables"])
+    
+    # Optional: Add CSS to preserve Markdown styles
+    css = CSS(string="""
+        body { font-family: "Arial", sans-serif; margin: 40px; }
+        h1, h2, h3 { font-weight: bold; margin-top: 20px; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 6px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f9f9f9; }
+    """)
+
+    # Convert HTML to PDF
+    HTML(string=html_text).write_pdf(pdf_path, stylesheets=[css])

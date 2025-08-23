@@ -6,6 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 import asyncio
 import sys
+import os
 
 from .schemas import OrchestratorState
 from .srag_metrics_agent import SRAGMetricsAgent
@@ -14,6 +15,7 @@ from ..report.generate_pdf import run_report
 from .prompt import FINAL_REPORT_SYSTEM, FINAL_REPORT_USER
 from ..etl.news_ingest import ingest_srag_news
 from ..etl.load_data import ingest_srag_data
+from ..utils.helper_functions import markdown_to_pdf
 
 
 logger = logging.getLogger(__name__)
@@ -199,7 +201,11 @@ class OrchestratorAgent:
         report_path = output_dir / "summary_report.md"
 
         report_path.write_text(final_report, encoding="utf-8")
-        logger.info(f"Final report saved to {report_path}")
+
+        # Convert to pdf
+        markdown_to_pdf(md_path=report_path, pdf_path=output_dir/"summary_report.pdf")
+        os.remove(report_path)
+        logger.info(f"Final report saved to {output_dir/'summary_report.pdf'}")
 
         return {"final_report": final_report}
 
