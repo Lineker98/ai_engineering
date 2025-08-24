@@ -7,8 +7,8 @@ from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from .schemas import AgentState, AgentSQLResult
-from .prompt import build_normalize_prompt
+from ..agents.schemas import AgentState, AgentSQLResult
+from ..agents.prompt import build_normalize_prompt
 
 class SRAGSQLAgentApp:
     
