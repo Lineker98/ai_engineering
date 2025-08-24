@@ -203,8 +203,8 @@ class OrchestratorAgent:
         report_path.write_text(final_report, encoding="utf-8")
 
         # Convert to pdf
-        markdown_to_pdf(md_path=report_path, pdf_path=output_dir/"summary_report.pdf")
-        os.remove(report_path)
+        #markdown_to_pdf(md_path=report_path, pdf_path=output_dir/"summary_report.pdf")
+        #os.remove(report_path)
         logger.info(f"Final report saved to {output_dir/'summary_report.pdf'}")
 
         return {"final_report": final_report}

@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime, timezone, date
 from typing import Any, Dict, Optional
 import markdown
-from weasyprint import HTML, CSS
+#from weasyprint import HTML, CSS
 
 
 def _json_default(o: Any):
